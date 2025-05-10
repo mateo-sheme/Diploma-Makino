@@ -1,0 +1,18 @@
+body {
+    padding-top: 70px; /* Adjust this based on your navbar height */
+}
+
+
+.filters {
+    background-color: #f8f9fa;
+    color: #0f172a;
+}
+
+.form-label {
+    color: #0f172a;
+}
+
+.car-card img {
+    max-height: 100%;
+    object-fit: cover;
+}

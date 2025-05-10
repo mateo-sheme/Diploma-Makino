@@ -1,0 +1,14 @@
+﻿body {
+    background-color: white;
+}
+
+#root {
+
+    margin-left: 0;
+    margin-right:0;
+}
+
+th, td {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}

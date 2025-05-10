@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    padding: 0;
+    
+}
+
+.homepage {
+    width: 100%;
+    margin-top: 60px;
+    position: relative;
+}
+
+.banner-container {
+    height: 600px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.search-container {
+    position: absolute;
+    bottom: 0; /* Position at the bottom of homepage */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    width: 80%;
+    max-width: 900px;
+    z-index: 10;
+    margin-bottom: -70px; /* Adjust this to control how much it overlaps */
+}
+.banner-image {
+    width: 100%;
+    object-fit: contain; /* Maintain aspect ratio without cropping */
+    object-position: center; /* Center the image */
+    max-height: 100%;
+}
+.sponsor-banner{
+    width:100px;
+}
+
+* Banner styling */
+.banner-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.banner-image {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+/* Card styling */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .banner-image {
+        max-height: 200px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+}

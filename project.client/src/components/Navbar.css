@@ -1,0 +1,120 @@
+/* Existing styles */
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0f172a !important;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.logo-img {
+    height: auto;
+    width: auto;
+    max-height: 50px;
+    flex-shrink: 0;
+}
+
+.desktop-nav {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    color: white !important;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: color 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+    .nav-link:hover {
+        color: #66b2ff !important;
+    }
+
+/* Mobile Toggle Button */
+.mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 1002;
+}
+
+.toggle-bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 4px 0;
+    transition: 0.3s;
+}
+
+/* Mobile Overlay */
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: 100%;
+    max-width: 300px;
+    background-color: #0f172a;
+    transition: right 0.3s ease-in-out;
+    z-index: 1001;
+    padding: 80px 20px 20px;
+}
+
+    .mobile-overlay.open {
+        right: 0;
+    }
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.overlay-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+
+    .mobile-toggle {
+        display: block;
+    }
+
+    .navbar {
+        justify-content: space-between;
+    }
+}
