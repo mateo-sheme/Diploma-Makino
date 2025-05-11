@@ -11,8 +11,8 @@ using Project.Server.Data;
 namespace Project.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250510221113_KrijimCarsSellerDheImazhet")]
-    partial class KrijimCarsSellerDheImazhet
+    [Migration("20250511094457_Car_SalesCar_ImagesAndUser")]
+    partial class Car_SalesCar_ImagesAndUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,13 +24,13 @@ namespace Project.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Project.Server.Entities.CarImage", b =>
+            modelBuilder.Entity("Project.Server.Entities.Car_Image", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("Car_ID")
                         .HasColumnType("int");
@@ -42,11 +42,11 @@ namespace Project.Server.Migrations
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.HasIndex("Car_ID");
 
-                    b.ToTable("CarImages");
+                    b.ToTable("Car_Images");
                 });
 
             modelBuilder.Entity("Project.Server.Entities.Cars_Sale", b =>
@@ -72,7 +72,7 @@ namespace Project.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Seller_ID")
+                    b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.Property<string>("Transmission")
@@ -80,8 +80,10 @@ namespace Project.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Usage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("User_ID")
+                        .HasColumnType("int");
 
                     b.Property<string>("VIN")
                         .IsRequired()
@@ -92,18 +94,18 @@ namespace Project.Server.Migrations
 
                     b.HasKey("Car_ID");
 
-                    b.HasIndex("Seller_ID");
+                    b.HasIndex("User_ID");
 
                     b.ToTable("Cars_Sale");
                 });
 
-            modelBuilder.Entity("Project.Server.Entities.Seller", b =>
+            modelBuilder.Entity("Project.Server.Entities.User", b =>
                 {
-                    b.Property<int>("Seller_ID")
+                    b.Property<int>("User_ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Seller_ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("User_ID"));
 
                     b.Property<string>("Contact_number")
                         .IsRequired()
@@ -121,12 +123,12 @@ namespace Project.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Seller_ID");
+                    b.HasKey("User_ID");
 
-                    b.ToTable("Seller");
+                    b.ToTable("User");
                 });
 
-            modelBuilder.Entity("Project.Server.Entities.CarImage", b =>
+            modelBuilder.Entity("Project.Server.Entities.Car_Image", b =>
                 {
                     b.HasOne("Project.Server.Entities.Cars_Sale", "Car")
                         .WithMany("Images")
@@ -139,13 +141,13 @@ namespace Project.Server.Migrations
 
             modelBuilder.Entity("Project.Server.Entities.Cars_Sale", b =>
                 {
-                    b.HasOne("Project.Server.Entities.Seller", "Seller")
+                    b.HasOne("Project.Server.Entities.User", "User")
                         .WithMany("Cars")
-                        .HasForeignKey("Seller_ID")
+                        .HasForeignKey("User_ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Seller");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Project.Server.Entities.Cars_Sale", b =>
@@ -153,7 +155,7 @@ namespace Project.Server.Migrations
                     b.Navigation("Images");
                 });
 
-            modelBuilder.Entity("Project.Server.Entities.Seller", b =>
+            modelBuilder.Entity("Project.Server.Entities.User", b =>
                 {
                     b.Navigation("Cars");
                 });

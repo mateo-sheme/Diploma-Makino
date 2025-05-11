@@ -5,16 +5,16 @@
 namespace Project.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class KrijimCarsSellerDheImazhet : Migration
+    public partial class Car_SalesCar_ImagesAndUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Seller",
+                name: "User",
                 columns: table => new
                 {
-                    Seller_ID = table.Column<int>(type: "int", nullable: false)
+                    User_ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Contact_number = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -23,7 +23,7 @@ namespace Project.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Seller", x => x.Seller_ID);
+                    table.PrimaryKey("PK_User", x => x.User_ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,29 +35,30 @@ namespace Project.Server.Migrations
                     VIN = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false),
                     Kilometers = table.Column<int>(type: "int", nullable: false),
                     Transmission = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Fuel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
-                    Usage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Seller_ID = table.Column<int>(type: "int", nullable: false)
+                    Usage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    User_ID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cars_Sale", x => x.Car_ID);
                     table.ForeignKey(
-                        name: "FK_Cars_Sale_Seller_Seller_ID",
-                        column: x => x.Seller_ID,
-                        principalTable: "Seller",
-                        principalColumn: "Seller_ID",
+                        name: "FK_Cars_Sale_User_User_ID",
+                        column: x => x.User_ID,
+                        principalTable: "User",
+                        principalColumn: "User_ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CarImages",
+                name: "Car_Images",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPrimary = table.Column<bool>(type: "bit", nullable: false),
@@ -65,9 +66,9 @@ namespace Project.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CarImages", x => x.Id);
+                    table.PrimaryKey("PK_Car_Images", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_CarImages_Cars_Sale_Car_ID",
+                        name: "FK_Car_Images_Cars_Sale_Car_ID",
                         column: x => x.Car_ID,
                         principalTable: "Cars_Sale",
                         principalColumn: "Car_ID",
@@ -75,27 +76,27 @@ namespace Project.Server.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CarImages_Car_ID",
-                table: "CarImages",
+                name: "IX_Car_Images_Car_ID",
+                table: "Car_Images",
                 column: "Car_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cars_Sale_Seller_ID",
+                name: "IX_Cars_Sale_User_ID",
                 table: "Cars_Sale",
-                column: "Seller_ID");
+                column: "User_ID");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CarImages");
+                name: "Car_Images");
 
             migrationBuilder.DropTable(
                 name: "Cars_Sale");
 
             migrationBuilder.DropTable(
-                name: "Seller");
+                name: "User");
         }
     }
 }

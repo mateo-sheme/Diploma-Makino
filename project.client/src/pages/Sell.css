@@ -1,14 +1,40 @@
-﻿/* Full-page background & spacing */
+﻿/* Sell.css */
 .sell-page {
-    background-color: #222222;
-    min-height: 100vh;
-    color: white;
+    padding-top: 20px;
+    background-color: #222;
+    min-height: 100px;
+    margin-top: 40px;
 }
 
-/* Image Preview */
 .preview-img {
+    height: 120px;
     width: 100%;
-    height: 150px;
     object-fit: cover;
-    border-radius: 8px;
+}
+
+.form-control, .form-select {
+    background-color: white;
+}
+
+.alert {
+    margin-top: 1rem;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.btn-danger {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.7rem;
+}
+
+@media (max-width: 768px) {
+    .sell-page {
+        padding: 10px;
+    }
+    
+    .preview-img {
+        height: 80px;
+    }
 }

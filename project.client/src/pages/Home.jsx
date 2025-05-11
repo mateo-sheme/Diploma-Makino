@@ -1,5 +1,6 @@
 import SearchBox from '../components/searchbox.jsx';
 import "bootswatch/dist/Litera/bootstrap.css";
+import "./Home.css";
 
 function Home() {
     return (
@@ -17,7 +18,9 @@ function Home() {
             <div className="container mt-4">
                 <div className="row justify-content-center">
                     <div className="col-12 col-md-8">
-                        <SearchBox />
+                        <div className="search-container">
+                            <SearchBox />
+                        </div>
                     </div>
                 </div>
             </div>

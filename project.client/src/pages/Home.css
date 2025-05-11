@@ -1,59 +1,37 @@
-* {
-    margin: 0;
-    padding: 0;
-    
-}
-
 .homepage {
     width: 100%;
-    margin-top: 60px;
+    margin-top: 60px; /* This matches your navbar height */
     position: relative;
 }
 
 .banner-container {
-    height: 600px;
     position: relative;
     width: 100%;
     display: flex;
     justify-content: center;
     overflow: hidden;
-}
-
-.search-container {
-    position: absolute;
-    bottom: 0; /* Position at the bottom of homepage */
-    left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
-    width: 80%;
-    max-width: 900px;
-    z-index: 10;
-    margin-bottom: -70px; /* Adjust this to control how much it overlaps */
-}
-.banner-image {
-    width: 100%;
-    object-fit: contain; /* Maintain aspect ratio without cropping */
-    object-position: center; /* Center the image */
-    max-height: 100%;
-}
-.sponsor-banner{
-    width:100px;
-}
-
-* Banner styling */
-.banner-container {
-    width: 100%;
-    overflow: hidden;
+    margin-top: -100px;
 }
 
 .banner-image {
     width: 100%;
     height: auto;
-    max-height: 300px;
+    max-height: 800px;
     object-fit: cover;
+}
+.search-container {
+    position: absolute;
+    top: 550px; /* Adjust this value to control vertical position */
+    left: 50%;
+    width: 90%;
+    transform: translateX(-50%);
+    max-width: 1000px;
+    z-index: 20; /* Make sure it's above the banner */
 }
 
 /* Card styling */
 .card {
+    top: 150px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     height: 100%;

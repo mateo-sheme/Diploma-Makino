@@ -1,18 +1,35 @@
-body {
-    padding-top: 70px; /* Adjust this based on your navbar height */
+/* Add these to your Search.css */
+.car-card {
+    transition: transform 0.2s;
 }
 
+    .car-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
 
-.filters {
-    background-color: #f8f9fa;
-    color: #0f172a;
-}
-
-.form-label {
-    color: #0f172a;
-}
-
-.car-card img {
-    max-height: 100%;
+.car-image {
+    height: 200px;
+    width: 100%;
     object-fit: cover;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-title {
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+.btn-outline-primary {
+    align-self: flex-start;
+    margin-top: auto;
 }

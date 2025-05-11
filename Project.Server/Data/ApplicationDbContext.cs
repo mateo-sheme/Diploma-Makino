@@ -11,8 +11,8 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Cars_Sale> Cars_Sale { get; set; } //Dbset <emri i klases qe deklarova> me emrin qe do marri ne db
-    public DbSet<Seller> Seller { get; set; }
-    public DbSet<CarImage> CarImages { get; set; }
+    public DbSet<User> User { get; set; }
+    public DbSet<Car_Image> Car_Images { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,10 +23,10 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(i => i.Car_ID)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Seller>()
+        modelBuilder.Entity<User>()
             .HasMany(s => s.Cars)
-            .WithOne(c => c.Seller)
-            .HasForeignKey(c => c.Seller_ID)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.User_ID)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

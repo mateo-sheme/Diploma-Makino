@@ -30,6 +30,7 @@ const Sell = () => {
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [models, setModels] = useState([]);
+    const [success, setSuccess] = useState(false);
 
     // Regex patterns
     const patterns = {
@@ -85,12 +86,14 @@ const Sell = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
+        setSuccess(false);
 
         if (!validateForm()) {
             return;
         }
 
-        setIsSubmitting(true);
 
         try {
             const submissionData = new FormData();
@@ -102,16 +105,16 @@ const Sell = () => {
                 submissionData.append(`images`, image);
             });
 
-            const response = await fetch('api/cars', {
+            const response = await fetch('api/car', {
                 method: 'POST',
                 body: submissionData
             });
 
             if (!response.ok) {
-                throw new Error('Submission failed');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create listing');
             }
 
-            alert('Listing created successfully!');
             setFormData({
                 VIN: '',
                 Brand: '',
@@ -121,13 +124,12 @@ const Sell = () => {
                 Fuel: '',
                 Year: '',
                 Usage: '',
-                Contact_Number: '',
-                Price: ''
+                Price: '',
+                Contact_Number: ''
             });
             setImages([]);
-            setError(null);
         } catch (err) {
-            setError(err.message || 'Failed to submit listing');
+            setError(err.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -142,6 +144,7 @@ const Sell = () => {
                         <h2 className="text-white mb-4">Create Listing</h2>
 
                         {error && <div className="alert alert-danger">{error}</div>}
+                        {success && <div className="alert alert-success">Listing created successfully!</div>}
 
                         <fieldset className="mb-4">
                             <div className="mb-3">
