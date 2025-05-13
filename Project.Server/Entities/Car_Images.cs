@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Project.Server.Entities
 {
@@ -16,7 +17,7 @@ namespace Project.Server.Entities
 
         [ForeignKey("Car_ID")]
         public int Car_ID { get; set; }
-
+        [JsonIgnore]
         public Cars_Sale? Car { get; set; } // Make nullable if it can be null
     }
 }

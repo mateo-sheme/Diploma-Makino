@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Search.css";
 
@@ -16,6 +16,10 @@ const Search = () => {
         maxYear: ''
     });
 
+    const [cars, setCars] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({
@@ -24,7 +28,36 @@ const Search = () => {
         }));
     };
 
-    // Sample car brands and models data
+    const fetchCars = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const params = new URLSearchParams();
+            for (const [key, value] of Object.entries(filters)) {
+                if (value) params.append(key, value);
+            }
+
+            const response = await fetch(`/api/car/search?${params.toString()}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch cars');
+            }
+
+            const data = await response.json();
+            setCars(data);
+        }
+        catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCars();
+    }, [filters]);
+
     const carBrands = {
         "Toyota": ["Corolla", "Camry", "RAV4", "Prius", "Hilux"],
         "Honda": ["Civic", "Accord", "CR-V", "Pilot", "Fit"],
@@ -38,19 +71,13 @@ const Search = () => {
     return (
         <div className="container mt-4">
             <div className="row">
-                {/* Filters */}
-                <div className="col-md-3">
-                    <div className="filters p-3 bg-light rounded shadow-sm">
-                        <h5>Filters</h5>
+                <aside className="col-md-3">
+                    <div className="filters p-4 bg-white rounded shadow-sm">
+                        <h5 className="mb-4 filter-cars" > Filter Cars</h5>
 
                         <div className="mb-3">
                             <label className="form-label">Brand</label>
-                            <select
-                                className="form-select"
-                                name="brand"
-                                value={filters.brand}
-                                onChange={handleFilterChange}
-                            >
+                            <select className="form-select" name="brand" value={filters.brand} onChange={handleFilterChange}>
                                 <option value="">All Brands</option>
                                 {Object.keys(carBrands).map(brand => (
                                     <option key={brand} value={brand}>{brand}</option>
@@ -60,13 +87,7 @@ const Search = () => {
 
                         <div className="mb-3">
                             <label className="form-label">Model</label>
-                            <select
-                                className="form-select"
-                                name="model"
-                                value={filters.model}
-                                onChange={handleFilterChange}
-                                disabled={!filters.brand}
-                            >
+                            <select className="form-select" name="model" value={filters.model} onChange={handleFilterChange} disabled={!filters.brand}>
                                 <option value="">All Models</option>
                                 {models.map(model => (
                                     <option key={model} value={model}>{model}</option>
@@ -76,12 +97,7 @@ const Search = () => {
 
                         <div className="mb-3">
                             <label className="form-label">Fuel Type</label>
-                            <select
-                                className="form-select"
-                                name="fuelType"
-                                value={filters.fuelType}
-                                onChange={handleFilterChange}
-                            >
+                            <select className="form-select" name="fuelType" value={filters.fuelType} onChange={handleFilterChange}>
                                 <option value="">All</option>
                                 <option value="Gasoline">Gasoline</option>
                                 <option value="Diesel">Diesel</option>
@@ -92,122 +108,82 @@ const Search = () => {
 
                         <div className="mb-3">
                             <label className="form-label">Transmission</label>
-                            <select
-                                className="form-select"
-                                name="transmission"
-                                value={filters.transmission}
-                                onChange={handleFilterChange}
-                            >
+                            <select className="form-select" name="transmission" value={filters.transmission} onChange={handleFilterChange}>
                                 <option value="">All</option>
                                 <option value="Manual">Manual</option>
                                 <option value="Automatic">Automatic</option>
                             </select>
                         </div>
 
-                        <div className="row mb-3">
+                        <div className="row g-2 mb-3">
                             <div className="col">
                                 <label className="form-label">KM From</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="minKm"
-                                    value={filters.minKm}
-                                    onChange={handleFilterChange}
-                                    placeholder="0"
-                                />
+                                <input type="number" className="form-control" name="minKm" value={filters.minKm} onChange={handleFilterChange} placeholder="0" />
                             </div>
                             <div className="col">
                                 <label className="form-label">KM To</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="maxKm"
-                                    value={filters.maxKm}
-                                    onChange={handleFilterChange}
-                                    placeholder="200000"
-                                />
+                                <input type="number" className="form-control" name="maxKm" value={filters.maxKm} onChange={handleFilterChange} placeholder="200000" />
                             </div>
                         </div>
 
-                        <div className="row mb-3">
+                        <div className="row g-2 mb-3">
                             <div className="col">
                                 <label className="form-label">Year From</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="minYear"
-                                    value={filters.minYear}
-                                    onChange={handleFilterChange}
-                                    min="1900"
-                                />
+                                <input type="number" className="form-control" name="minYear" value={filters.minYear} onChange={handleFilterChange} />
                             </div>
                             <div className="col">
                                 <label className="form-label">Year To</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="maxYear"
-                                    value={filters.maxYear}
-                                    onChange={handleFilterChange}
-                                    max={new Date().getFullYear() + 1}
-                                />
+                                <input type="number" className="form-control" name="maxYear" value={filters.maxYear} onChange={handleFilterChange} max={new Date().getFullYear() + 1} />
                             </div>
                         </div>
 
-                        <div className="row mb-3">
+                        <div className="row g-2 mb-4">
                             <div className="col">
                                 <label className="form-label">Price From (€)</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="minPrice"
-                                    value={filters.minPrice}
-                                    onChange={handleFilterChange}
-                                />
+                                <input type="number" className="form-control" name="minPrice" value={filters.minPrice} onChange={handleFilterChange} />
                             </div>
                             <div className="col">
                                 <label className="form-label">Price To (€)</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="maxPrice"
-                                    value={filters.maxPrice}
-                                    onChange={handleFilterChange}
-                                />
+                                <input type="number" className="form-control" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} />
                             </div>
                         </div>
-
-                        <button className="btn btn-primary w-100">Apply Filters</button>
                     </div>
-                </div>
+                </aside>
 
-                {/* Search Results */}
-                <div className="col-md-9">
-                    {/* Sample car card - you would map through actual results */}
-                    <div className="car-card card mb-4 shadow-sm">
-                        <div className="row g-0">
-                            <div className="col-md-4">
-                                <img
-                                    src="https://via.placeholder.com/300x200"
-                                    className="img-fluid rounded-start"
-                                    alt="car"
-                                />
-                            </div>
-                            <div className="col-md-8">
-                                <div className="card-body">
-                                    <h5 className="card-title">Mercedes-Benz E 200 Kompressor</h5>
-                                    <p className="card-text">
-                                        <strong>€7,000</strong> • Used • June 2000 • 131,000 km •
-                                        Gasoline (Euro 3) • Automatic
-                                    </p>
-                                    <p className="card-text">
-                                        <small className="text-muted">VIN: WDB12345678901234</small>
-                                    </p>
+                <main className="col-md-9">
+                    {loading && <div className="text-center my-4">Loading cars...</div>}
+                    {error && <div className="alert alert-danger">{error}</div>}
+
+                    {cars.length === 0 && !loading ? (
+                        <div className="alert alert-info">No cars found matching your criteria.</div>
+                    ) : (
+                        <div className="row row-cols-1 row-cols-md-2 g-4">
+                            {cars.map(car => (
+                                <div key={car.car_ID} className="col">
+                                    <div className="car-card card h-100 shadow-sm">
+                                        {car.images?.length > 0 ? (
+                                            <img src={car.images[0].imagePath} className="card-img-top car-image" alt={car.brand} />
+                                        ) : (
+                                            <div className="car-image-placeholder d-flex align-items-center justify-content-center bg-secondary text-white">
+                                                No Image
+                                            </div>
+                                        )}
+                                        <div className="card-body d-flex flex-column">
+                                            <h5 className="card-title">{car.brand} {car.model}</h5>
+                                            <p className="card-text flex-grow-1">
+                                                <strong>€{car.price.toLocaleString()}</strong> • {car.usage} • {car.year} • {car.kilometers.toLocaleString()} km • {car.fuel} • {car.transmission}
+                                            </p>
+                                            <p className="card-text">
+                                                <small className="text-muted">VIN: {car.vin}</small>
+                                            </p>
+                                            <button className="btn btn-primary mt-auto">View Details</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
-                    </div>
-                </div>
+                    )}
+                </main>
             </div>
         </div>
     );

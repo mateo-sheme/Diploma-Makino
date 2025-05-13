@@ -34,11 +34,8 @@ namespace Project.Server.Entities
 
         public string? Usage { get; set; }
 
-        [ForeignKey("User")]
         [Required]
-        public int User_ID { get; set; } 
-
-        public User? User { get; set; } 
+        public string Contact_Number { get; set; } = string.Empty;
 
         public ICollection<Car_Image> Images { get; set; } = new List<Car_Image>();
     }

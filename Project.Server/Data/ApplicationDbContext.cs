@@ -23,10 +23,9 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(i => i.Car_ID)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<User>()
-            .HasMany(s => s.Cars)
-            .WithOne(c => c.User)
-            .HasForeignKey(c => c.User_ID)
-            .OnDelete(DeleteBehavior.Cascade);
+        //modelBuilder.Entity<User>()
+        //    .HasMany(s => s.Cars)
+        //    .HasForeignKey(c => c.User_ID)
+        //    .OnDelete(DeleteBehavior.Cascade);
     }
 }
