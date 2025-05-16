@@ -3,6 +3,7 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border: none;
     border-radius: 0.75rem;
+    margin-top: -50px;
 }
 
     .car-card:hover {
@@ -57,7 +58,7 @@
 
 /* Sticky filter sidebar */
 .filters {
-    margin-bottom: 100px;
+    margin-top: 100px;
 }
 
 .filter-cars{

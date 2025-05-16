@@ -33,12 +33,27 @@ const Search = () => {
             setLoading(true);
             setError(null);
 
-            const params = new URLSearchParams();
-            for (const [key, value] of Object.entries(filters)) {
-                if (value) params.append(key, value);
-            }
+            // Convert filter names to match your API parameters
+            const apiParams = {
+                brand: filters.brand,
+                model: filters.model,
+                fuelType: filters.fuelType,
+                transmission: filters.transmission,
+                minPrice: filters.minPrice,
+                maxPrice: filters.maxPrice,
+                minKm: filters.minKm,
+                maxKm: filters.maxKm,
+                minYear: filters.minYear,
+                maxYear: filters.maxYear
+            };
 
-            const response = await fetch(`/api/car/search?${params.toString()}`);
+            // Build query string, removing empty params
+            const queryString = Object.entries(apiParams)
+                .filter(([, value]) => value !== '')  // Now properly using both parameters
+                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                .join('&');
+
+            const response = await fetch(`/api/car/search?${queryString}`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch cars');
@@ -46,8 +61,7 @@ const Search = () => {
 
             const data = await response.json();
             setCars(data);
-        }
-        catch (err) {
+        } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
@@ -158,29 +172,42 @@ const Search = () => {
                         <div className="alert alert-info">No cars found matching your criteria.</div>
                     ) : (
                         <div className="row row-cols-1 row-cols-md-2 g-4">
-                            {cars.map(car => (
-                                <div key={car.car_ID} className="col">
-                                    <div className="car-card card h-100 shadow-sm">
-                                        {car.images?.length > 0 ? (
-                                            <img src={car.images[0].imagePath} className="card-img-top car-image" alt={car.brand} />
-                                        ) : (
-                                            <div className="car-image-placeholder d-flex align-items-center justify-content-center bg-secondary text-white">
-                                                No Image
+                                {cars.map(car => (
+                                    <div key={car.car_ID} className="col">
+                                        <div className="car-card card h-100 shadow-sm d-flex flex-column">
+                                            {car.images?.length > 0 ? (
+                                                <img
+                                                    src={`data:image/jpeg;base64,${car.images[0].imageData}`}
+                                                    className="card-img-top car-image"
+                                                    alt={`${car.brand} ${car.model}`}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = '/path/to/fallback-image.jpg';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="car-image-placeholder d-flex align-items-center justify-content-center bg-secondary text-white">
+                                                    No Image
+                                                </div>
+                                            )}
+                                            <div className="card-body d-flex flex-column">
+                                                <div>
+                                                    <h5 className="card-title">{car.brand} {car.model}</h5>
+                                                    <p className="card-text">
+                                                        <strong>{'\u20AC'}{car.price?.toLocaleString()}</strong> | {car.usage} | {car.year} | {car.kilometers?.toLocaleString()} km | {car.fuel} | {car.transmission}
+                                                    </p>
+                                                    <p className="card-text">
+                                                        <small className="text-muted">VIN: {car.vin}</small>
+                                                    </p>
+                                                </div>
+
+                                                <div className="mt-auto pt-3">
+                                                    <button className="btn btn-primary w-100">View Details</button>
+                                                </div>
                                             </div>
-                                        )}
-                                        <div className="card-body d-flex flex-column">
-                                            <h5 className="card-title">{car.brand} {car.model}</h5>
-                                            <p className="card-text flex-grow-1">
-                                                <strong>€{car.price.toLocaleString()}</strong> • {car.usage} • {car.year} • {car.kilometers.toLocaleString()} km • {car.fuel} • {car.transmission}
-                                            </p>
-                                            <p className="card-text">
-                                                <small className="text-muted">VIN: {car.vin}</small>
-                                            </p>
-                                            <button className="btn btn-primary mt-auto">View Details</button>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     )}
                 </main>

@@ -39,7 +39,7 @@ export default function Sell() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setFormData(prev => ({
             ...prev,
             [name]: value,
             ...(name === "Brand" ? { Model: "" } : {}),
@@ -71,18 +71,26 @@ export default function Sell() {
 
         if (!validateForm()) return setIsSubmitting(false);
 
-        const submissionData = new FormData();
-        Object.entries(formData).forEach(([k, v]) => submissionData.append(k, v));
-        images.forEach((img) => submissionData.append("images", img));
-
         try {
-            const res = await fetch("/api/car", {
-                method: "POST",
-                body: submissionData,
+            const formDataToSend = new FormData(); // Renamed to avoid conflict with state
+
+            // Append all car data (using the state formData, not the new FormData)
+            Object.entries(formData).forEach(([key, value]) => {
+                formDataToSend.append(key, value);
             });
 
-            if (!res.ok) {
-                const errorText = await res.text();
+            // Append all images
+            images.forEach((image) => {
+                formDataToSend.append("images", image);
+            });
+
+            const response = await fetch("/api/car", {
+                method: "POST",
+                body: formDataToSend // No Content-Type header needed
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
                 throw new Error(errorText);
             }
 
@@ -90,7 +98,7 @@ export default function Sell() {
             setFormData(initialForm);
             setImages([]);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Failed to submit form");
         } finally {
             setIsSubmitting(false);
         }

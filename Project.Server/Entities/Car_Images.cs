@@ -9,8 +9,8 @@ namespace Project.Server.Entities
         [Key]
         public int ID { get; set; }
 
-        [Required]
-        public string ImagePath { get; set; } = string.Empty; //initializie
+        public byte[] ImageData { get; set; }  // Binary data
+        public string ContentType { get; set; } // "image/jpeg", "image/png" etc.
 
         [Required]
         public bool IsPrimary { get; set; }
