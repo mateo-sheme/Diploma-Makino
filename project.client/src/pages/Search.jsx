@@ -171,7 +171,7 @@ const Search = () => {
                 </aside>
 
                 <main className="col-md-9">
-                    {loading && <div className="text-center my-4">Loading cars...</div>}
+                    {loading && <div className="loading text-center my-4">Loading cars...</div>}
                     {error && <div className="alert alert-danger">{error}</div>}
 
                     {cars.length === 0 && !loading ? (
