@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Search.css";
 
@@ -49,11 +50,15 @@ const Search = () => {
 
             // Build query string, removing empty params
             const queryString = Object.entries(apiParams)
-                .filter(([, value]) => value !== '')  // Now properly using both parameters
+                .filter(([, value]) => value !== '')
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&');
 
-            const response = await fetch(`/api/car/search?${queryString}`);
+            // Update URL after creating queryString
+            const newUrl = `${window.location.pathname}?${queryString}`;
+            window.history.pushState({}, '', newUrl);
+
+            const response = await fetch(`/api/car/search${queryString}`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch cars');
@@ -81,6 +86,7 @@ const Search = () => {
     };
 
     const models = filters.brand ? carBrands[filters.brand] || [] : [];
+    const navigate = useNavigate();
 
     return (
         <div className="container mt-4">
@@ -153,11 +159,11 @@ const Search = () => {
 
                         <div className="row g-2 mb-4">
                             <div className="col">
-                                <label className="form-label">Price From (€)</label>
+                                <label className="form-label">Price From {'\u20AC'}</label>
                                 <input type="number" className="form-control" name="minPrice" value={filters.minPrice} onChange={handleFilterChange} />
                             </div>
                             <div className="col">
-                                <label className="form-label">Price To (€)</label>
+                                <label className="form-label">Price To {'\u20AC'}</label>
                                 <input type="number" className="form-control" name="maxPrice" value={filters.maxPrice} onChange={handleFilterChange} />
                             </div>
                         </div>
@@ -177,7 +183,7 @@ const Search = () => {
                                         <div className="car-card card h-100 shadow-sm d-flex flex-column">
                                             {car.images?.length > 0 ? (
                                                 <img
-                                                    src={`data:image/jpeg;base64,${car.images[0].imageData}`}
+                                                    src={`/api/car/${car.car_ID}/image/${car.images[0].id}`}
                                                     className="card-img-top car-image"
                                                     alt={`${car.brand} ${car.model}`}
                                                     onError={(e) => {
@@ -194,15 +200,19 @@ const Search = () => {
                                                 <div>
                                                     <h5 className="card-title">{car.brand} {car.model}</h5>
                                                     <p className="card-text">
-                                                        <strong>{'\u20AC'}{car.price?.toLocaleString()}</strong> | {car.usage} | {car.year} | {car.kilometers?.toLocaleString()} km | {car.fuel} | {car.transmission}
+                                                        <strong>{car.price?.toLocaleString()} {'\u20AC'}</strong> | {car.usage} | {car.year} | {car.kilometers?.toLocaleString()} km | {car.fuel} | {car.transmission}
                                                     </p>
                                                     <p className="card-text">
                                                         <small className="text-muted">VIN: {car.vin}</small>
                                                     </p>
                                                 </div>
 
-                                                <div className="mt-auto pt-3">
-                                                    <button className="btn btn-primary w-100">View Details</button>
+                                                <div className=" mt-auto pt-3">
+                                                    <button
+                                                        className="btn-details btn-primary w-100"
+                                                        onClick={() => navigate(`/car/${car.car_ID}`)}>
+                                                        View Details
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

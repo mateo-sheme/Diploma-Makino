@@ -9,6 +9,7 @@ import Home from './pages/Home'
 import Search from './pages/Search'
 import Sell from './pages/Sell'
 import Mycar from './pages/Mycar'
+import CarDetails from './pages/CarDetails';
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/Search" element={<Search />} />
                 <Route path="/Sell" element={<Sell />} />
                 <Route path="/Mycar" element={<Mycar />} />
+                <Route path="/car/:id" element={<CarDetails />} />
             </Routes>
             
         </div>

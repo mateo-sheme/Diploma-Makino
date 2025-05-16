@@ -92,6 +92,23 @@ namespace Project.Server.Controllers
             return File(image.ImageData, image.ContentType);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Cars_Sale>>> GetAllCars()
+        {
+            try
+            {
+                var cars = await _db.Cars_Sale
+                    .Include(c => c.Images)
+                    .ToListAsync();
+
+                return Ok(cars);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving cars: {ex.Message}");
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<Cars_Sale>> CreateCar([FromForm] Cars_Sale car, [FromForm] List<IFormFile> images)
         {

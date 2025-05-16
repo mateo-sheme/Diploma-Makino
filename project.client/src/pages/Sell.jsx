@@ -55,10 +55,16 @@ export default function Sell() {
 
     const validateForm = () => {
         if (!patterns.VIN.test(formData.VIN)) {
-            return setError("Invalid VIN. Use 17 letters/numbers.");
+            setError("Invalid VIN. Use 17 letters/numbers.");
+            return false;
         }
         if (!patterns.Contact_Number.test(formData.Contact_Number)) {
-            return setError("Invalid phone number format.");
+            setError("Invalid phone number format.");
+            return false;
+        }
+        if (images.length === 0) {
+            setError("Please upload at least one image");
+            return false;
         }
         return true;
     };
@@ -69,29 +75,32 @@ export default function Sell() {
         setSuccess(false);
         setIsSubmitting(true);
 
-        if (!validateForm()) return setIsSubmitting(false);
+        if (!validateForm()) {
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
-            const formDataToSend = new FormData(); // Renamed to avoid conflict with state
+            const formDataToSend = new FormData();
 
-            // Append all car data (using the state formData, not the new FormData)
+            // Append car data (except images)
             Object.entries(formData).forEach(([key, value]) => {
                 formDataToSend.append(key, value);
             });
 
-            // Append all images
+            // Append images with correct field name
             images.forEach((image) => {
-                formDataToSend.append("images", image);
+                formDataToSend.append("images", image); // Must match the parameter name in your API
             });
 
             const response = await fetch("/api/car", {
                 method: "POST",
-                body: formDataToSend // No Content-Type header needed
+                body: formDataToSend // Don't set Content-Type header for FormData
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText);
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || "Failed to submit form");
             }
 
             setSuccess(true);
@@ -103,7 +112,6 @@ export default function Sell() {
             setIsSubmitting(false);
         }
     };
-
     return (
         <div className="container py-4">
             <h2 className="text-center text-white mb-4">Sell Your Car</h2>
@@ -187,6 +195,7 @@ export default function Sell() {
                                     src={URL.createObjectURL(img)}
                                     alt="preview"
                                     className="img-fluid rounded"
+                                    style={{ height: '100px', objectFit: 'cover' }}
                                 />
                             </div>
                         ))}
