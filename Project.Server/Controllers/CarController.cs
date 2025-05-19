@@ -108,7 +108,6 @@ namespace Project.Server.Controllers
                 return StatusCode(500, $"Error retrieving cars: {ex.Message}");
             }
         }
-
         [HttpPost]
         public async Task<ActionResult<Cars_Sale>> CreateCar([FromForm] Cars_Sale car, [FromForm] List<IFormFile> images)
         {

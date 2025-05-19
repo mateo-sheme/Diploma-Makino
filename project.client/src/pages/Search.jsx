@@ -1,68 +1,44 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Search.css";
 
 const Search = () => {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [filters, setFilters] = useState({
-        brand: '',
-        model: '',
-        fuelType: '',
-        transmission: '',
-        minPrice: '',
-        maxPrice: '',
-        minKm: '',
-        maxKm: '',
-        minYear: '',
-        maxYear: ''
+        brand: searchParams.get('brand') || '',
+        model: searchParams.get('model') || '',
+        fuelType: searchParams.get('fuelType') || '',
+        transmission: searchParams.get('transmission') || '',
+        minPrice: searchParams.get('minPrice') || '',
+        maxPrice: searchParams.get('maxPrice') || '',
+        minKm: searchParams.get('minKm') || '',
+        maxKm: searchParams.get('maxKm') || '',
+        minYear: searchParams.get('minYear') || '',
+        maxYear: searchParams.get('maxYear') || ''
     });
 
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
     const fetchCars = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            // Convert filter names to match your API parameters
-            const apiParams = {
-                brand: filters.brand,
-                model: filters.model,
-                fuelType: filters.fuelType,
-                transmission: filters.transmission,
-                minPrice: filters.minPrice,
-                maxPrice: filters.maxPrice,
-                minKm: filters.minKm,
-                maxKm: filters.maxKm,
-                minYear: filters.minYear,
-                maxYear: filters.maxYear
-            };
-
-            // Build query string, removing empty params
-            const queryString = Object.entries(apiParams)
+            // Create query string from current filters
+            const queryString = Object.entries(filters)
                 .filter(([, value]) => value !== '')
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&');
 
-            // Update URL after creating queryString
-            const newUrl = `${window.location.pathname}?${queryString}`;
-            window.history.pushState({}, '', newUrl);
+            // Update URL to reflect current filters
+            navigate(`?${queryString}`, { replace: true });
 
-            const response = await fetch(`/api/car/search${queryString}`);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch cars');
-            }
+            const response = await fetch(`/api/car/search?${queryString}`);
+            if (!response.ok) throw new Error('Failed to fetch cars');
 
             const data = await response.json();
             setCars(data);
@@ -71,6 +47,15 @@ const Search = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value,
+            ...(name === "brand" ? { model: "" } : {})
+        }));
     };
 
     useEffect(() => {
@@ -86,7 +71,7 @@ const Search = () => {
     };
 
     const models = filters.brand ? carBrands[filters.brand] || [] : [];
-    const navigate = useNavigate();
+    
 
     return (
         <div className="container mt-4">

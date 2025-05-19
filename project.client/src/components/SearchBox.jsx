@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Searchbox.css";
 
@@ -8,14 +9,16 @@ const SearchBox = () => {
         model: "",
         minPrice: "",
         maxPrice: "",
-        location: "",
         fuelType: "",
         transmission: "",
         minYear: "",
-        maxYear: ""
+        maxYear: "",
+        minKm: "",
+        maxKm: ""
     });
 
-    // Sample car brands and models data
+    const navigate = useNavigate();
+
     const carBrands = {
         "Toyota": ["Corolla", "Camry", "RAV4", "Prius", "Hilux"],
         "Honda": ["Civic", "Accord", "CR-V", "Pilot", "Fit"],
@@ -30,13 +33,22 @@ const SearchBox = () => {
         const { name, value } = e.target;
         setSearchParams(prev => ({
             ...prev,
-            [name]: value
+            [name]: value,
+            ...(name === "brand" ? { model: "" } : {})
         }));
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        console.log("Searching with:", searchParams);
+
+        // Create URL parameters from non-empty fields
+        const params = new URLSearchParams();
+        Object.entries(searchParams).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+
+        // Navigate to search page with parameters
+        navigate(`/search?${params.toString()}`);
     };
 
     return (
@@ -49,8 +61,10 @@ const SearchBox = () => {
                         onChange={handleChange}
                     >
                         <option value="">Any Brand</option>
-                        {Object.keys(carBrands).map(brand => (
-                            <option key={brand} value={brand}>{brand}</option>
+                        {Object.keys(carBrands).map((b) => (
+                            <option key={b} value={b}>
+                                {b}
+                            </option>
                         ))}
                     </select>
 
@@ -61,13 +75,14 @@ const SearchBox = () => {
                         disabled={!searchParams.brand}
                     >
                         <option value="">Any Model</option>
-                        {models.map(model => (
-                            <option key={model} value={model}>{model}</option>
+                        {models.map((m) => (
+                            <option key={m} value={m}>
+                                {m}
+                            </option>
                         ))}
                     </select>
                 </div>
 
-                
                 <div className="form-group">
                     <input
                         type="number"
@@ -89,7 +104,7 @@ const SearchBox = () => {
                 <div className="form-group">
                     <select
                         name="usage"
-                        value={searchParams.fuelType}
+                        value={searchParams.usage}
                         onChange={handleChange}
                     >
                         <option value="">Usage</option>
