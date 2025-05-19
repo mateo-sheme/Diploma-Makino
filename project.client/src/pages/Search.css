@@ -94,12 +94,9 @@
 
 
 .alert-danger {
-    margin-top: 100px !important; /* Adjust based on your navbar height */
-    width: 100%;
+    margin-bottom: 50px;
 }
 
-.loading {
-    margin-top: 100px !important; /* Adjust this value as needed */
-    font-size: 1.2rem;
+.text-center.my-4 {
+    margin-bottom: 50px;
 }
-
