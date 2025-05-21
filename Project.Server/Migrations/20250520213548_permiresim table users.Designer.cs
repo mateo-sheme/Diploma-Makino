@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Server.Data;
 
@@ -11,9 +12,11 @@ using Project.Server.Data;
 namespace Project.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250520213548_permiresim table users")]
+    partial class permiresimtableusers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,9 +91,6 @@ namespace Project.Server.Migrations
                     b.Property<string>("Usage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("User_ID")
-                        .HasColumnType("int");
-
                     b.Property<string>("VIN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -99,8 +99,6 @@ namespace Project.Server.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Car_ID");
-
-                    b.HasIndex("User_ID");
 
                     b.ToTable("Cars_Sale");
                 });
@@ -147,23 +145,7 @@ namespace Project.Server.Migrations
 
             modelBuilder.Entity("Project.Server.Entities.Cars_Sale", b =>
                 {
-                    b.HasOne("Project.Server.Entities.User", "User")
-                        .WithMany("Cars")
-                        .HasForeignKey("User_ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Project.Server.Entities.Cars_Sale", b =>
-                {
                     b.Navigation("Images");
-                });
-
-            modelBuilder.Entity("Project.Server.Entities.User", b =>
-                {
-                    b.Navigation("Cars");
                 });
 #pragma warning restore 612, 618
         }

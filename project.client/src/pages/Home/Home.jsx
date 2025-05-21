@@ -1,4 +1,4 @@
-import SearchBox from '../components/searchbox.jsx';
+import SearchBox from '../../components/searchbox.jsx';
 import "bootswatch/dist/Litera/bootstrap.css";
 import "./Home.css";
 

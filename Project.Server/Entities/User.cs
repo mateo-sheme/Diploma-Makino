@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.Server.Entities
 {
@@ -9,18 +10,18 @@ namespace Project.Server.Entities
         public int User_ID { get; set; }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
-
-        [Required]
-        public string Contact_number { get; set; } = string.Empty;
-
-        [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Password { get; set; } = string.Empty;
+        [StringLength(64)]
+        public string PasswordHash { get; set; } = string.Empty;
+
+        [Required]
+        public string Phone { get; set; } = string.Empty;
 
         public ICollection<Cars_Sale> Cars { get; set; } = new List<Cars_Sale>();
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
