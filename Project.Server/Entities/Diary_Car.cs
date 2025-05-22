@@ -10,6 +10,7 @@ namespace Project.Server.Entities
         public int User_ID { get; set; }
         [ForeignKey(nameof(User_ID))]
         public User? User { get; set; }
+        public string Nickname_Car { get; set; } = string.Empty;
         [Required]
         public string VIN { get; set; } = string.Empty;
         [Required]
@@ -22,8 +23,8 @@ namespace Project.Server.Entities
         public int Current_Kilometers { get; set; }
         [Required]
         public string Fuel { get; set; } = string.Empty;
-        public byte[] Car_Image { get; set; }
-        public string Content_Type { get; set; } = string.Empty;
+        public byte[]? Car_Image { get; set; }
+        public string? Content_Type { get; set; } = string.Empty;
 
         public ICollection<Maintenance_Record> Maintenance_Record { get; set; } = new List<Maintenance_Record>();
 
