@@ -18,7 +18,6 @@ const Login = () => {
         setError("");
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
         if (!emailRegex.test(email)) {
             setError("Invalid email format.");
@@ -26,30 +25,31 @@ const Login = () => {
             return;
         }
 
-        if (!passwordRegex.test(password)) {
-            setError("Password must be at least 6 characters and include a number.");
-            setIsLoading(false);
-            return;
-        }
-
         try {
             const response = await fetch("/api/auth/login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
+                headers: { "Content-Type": "application/json", },
+                body: JSON.stringify({
+                    Email: email,         // Match backend expectation
+                    PasswordHash: password // Send as PasswordHash (will be hashed in backend)
+                }),
+                credentials: 'include'
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error("Login failed");
+                throw new Error(data.message || "Login failed");
             }
 
-            const userData = await response.json();
-            login(userData); // Update auth context with user data
-            navigate("/"); // Redirect to home after successful login
+            login({
+                userId: data.userId,
+                email: data.email
+            });
+            navigate("/");
+
         } catch (err) {
-            setError(err.message || "Invalid email or password");
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -104,7 +104,7 @@ const Login = () => {
                         className="btn btn-link p-0"
                         onClick={() => navigate("/register")}
                     >
-                        Register here
+                        Register
                     </button>
                 </div>
             </div>

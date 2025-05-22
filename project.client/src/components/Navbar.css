@@ -33,7 +33,16 @@
     gap: 40px;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 10px;
+}
+
+.mobile-auth-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .nav-link {
@@ -105,16 +114,30 @@
     gap: 20px;
 }
 
-@media (max-width: 768px) {
+.btn{
+    font-size:10pt;
+}
+
+.nav-email{
+    padding: 10px;
+}
+
+
+
+@media (max-width: 992px) {
     .desktop-nav {
-        display: none;
+        position: static;
+        transform: none;
     }
 
-    .mobile-toggle {
-        display: block;
+    .right-nav-items {
+        padding-left: 10px; /* Reduce spacing on smaller screens */
     }
+}
 
-    .navbar {
-        justify-content: space-between;
+@media (max-width: 768px) {
+    .desktop-nav,
+    .right-nav-items {
+        display: none; /* Hide on mobile */
     }
 }

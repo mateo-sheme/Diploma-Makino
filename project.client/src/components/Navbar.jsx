@@ -3,9 +3,17 @@ import { useState } from "react";
 import "bootswatch/dist/Litera/bootstrap.css";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Navbar.css";
+import { useAuth } from '../contexts/AuthContext';
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const { currentUser, logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        setIsOpen(false);
+    };
+
     return (
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
             <div className="d-flex align-items-center" id="navbarNav">
@@ -28,6 +36,25 @@ export const Navbar = () => {
                         <Link className="nav-link" to="/mycar">My Car</Link>
                     </li>
                 </ul>
+
+                {currentUser && (
+                    <span className="nav-email">{currentUser.email}</span>
+                )}
+                {currentUser ? (
+                    <button
+                        className="btn btn-outline-light btn-sm"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                ) : (
+                    <Link
+                        to="/login"
+                        className="btn btn-outline-light btn-sm"
+                    >
+                        Login
+                    </Link>
+                )}
             </div>
 
             {/* Mobile Toggle Button */}
@@ -49,7 +76,6 @@ export const Navbar = () => {
                     <Link className="nav-link" to="/mycar" onClick={() => setIsOpen(false)}>My Car</Link>
                 </div>
             </div>
-
         </nav>
     );
 };

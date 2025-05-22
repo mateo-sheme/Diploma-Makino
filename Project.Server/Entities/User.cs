@@ -14,10 +14,9 @@ namespace Project.Server.Entities
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(64)]
+        [StringLength(256)]
         public string PasswordHash { get; set; } = string.Empty;
 
-        [Required]
         public string Phone { get; set; } = string.Empty;
 
         public ICollection<Cars_Sale> Cars { get; set; } = new List<Cars_Sale>();

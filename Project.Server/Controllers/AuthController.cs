@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Server.Data;
 using Project.Server.Entities;
-using Project.Server.Models;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Project.Server.Controllers
 {
@@ -14,74 +11,94 @@ namespace Project.Server.Controllers
     public class AuthController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly PasswordHasher<User> _passwordHasher;
 
         public AuthController(ApplicationDbContext db)
         {
             _db = db;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] Register model)
+        public async Task<IActionResult> Register([FromBody] User userInput)
         {
-            if (await _db.Users.AnyAsync(u => u.Email == model.Email))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Email already exists");
-
+                return BadRequest(ModelState);
             }
-                var user = new User
-                {
-                    Email = model.Email,
-                    PasswordHash = MD5Hash(model.Password)
-                };
 
+            if (await _db.Users.AnyAsync(u => u.Email == userInput.Email))
+            {
+                return Conflict(new
+                {
+                    success = false,
+                    message = "Email already exists",
+                    field = "email"
+                });
+            }
+
+            var user = new User
+            {
+                Email = userInput.Email,
+                Phone = userInput.Phone,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Securely hash password
+            user.PasswordHash = _passwordHasher.HashPassword(user, userInput.PasswordHash);
+
+            try
+            {
                 _db.Users.Add(user);
                 await _db.SaveChangesAsync();
 
-                HttpContext.Session.SetInt32("User_ID", user.User_ID);
-                return Ok(new { message = "Registration successful" });
+                return Ok(new
+                {
+                    message = "Registration successful",
+                    userId = user.User_ID
+                });
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Login model)
+        public async Task<IActionResult> Login([FromBody] User userInput)
         {
-            var user = await _db.Users
-                .FirstOrDefaultAsync(u => u.Email == model.Email &&
-                                         u.PasswordHash == MD5Hash(model.Password));
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == userInput.Email.ToLower());
 
             if (user == null)
-                return Unauthorized("Invalid email or password");
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "Invalid email or password"
+                });
+            }
 
-            HttpContext.Session.SetInt32("User_ID", user.User_ID);
-            return Ok(new { message = "Login successful" });
+            // Verify password
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, userInput.PasswordHash);
+            if (result != PasswordVerificationResult.Success)
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+
+            return Ok(new
+            {
+                userId = user.User_ID,
+                email = user.Email,
+                phone = user.Phone
+                // Add other needed user properties
+            });
         }
 
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("User_ID");
+            // Since we're not using sessions, just return success
             return Ok(new { message = "Logged out successfully" });
-        }
-
-        [HttpGet("current")]
-        public async Task<IActionResult> GetCurrentUser()
-        {
-            var userId = HttpContext.Session.GetInt32("User_ID");
-            if (userId == null) return Unauthorized();
-
-            var user = await _db.Users.FindAsync(userId);
-            if (user == null) return Unauthorized();
-
-            return Ok(new { user.Email });
-        }
-
-        private static string MD5Hash(string input)
-        {
-            using (var md5 = MD5.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(input);
-                var hashBytes = md5.ComputeHash(bytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
         }
     }
 }

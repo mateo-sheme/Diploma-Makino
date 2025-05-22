@@ -5,139 +5,163 @@ import "./Auth.css";
 
 const Register = () => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [phone, setPhone] = useState("");
+    const [userData, setUserData] = useState({
+        Email: "",
+        PasswordHash: "",
+        Phone: ""
+    });
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [touched, setTouched] = useState({
+        Phone: false
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setUserData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        setTouched(prev => ({
+            ...prev,
+            [name]: true
+        }));
+    };
+
+    const validatePhone = (phone) => {
+        const digits = phone.replace(/\D/g, "");
+        return digits.length >= 10; // Minimum 10 digits required
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setSuccess(false);
         setError("");
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-        const phoneRegex = /^\+\d{1,4}[\s-]?(\d[\s-]?){9,}$/;
 
-        if (!emailRegex.test(email)) {
+        // Validate required fields
+        if (!userData.Email || !userData.PasswordHash || !userData.Phone) {
+            setError("All fields are required");
+            setIsLoading(false);
+            return;
+        }
+
+        if (!emailRegex.test(userData.Email)) {
             setError("Invalid email format.");
             setIsLoading(false);
             return;
         }
 
-        if (!passwordRegex.test(password)) {
+        if (!passwordRegex.test(userData.PasswordHash)) {
             setError("Password must be at least 6 characters and include a number.");
             setIsLoading(false);
             return;
         }
 
-        if (!phoneRegex.test(formatPhoneNumber)) {
-            setError("Phone number must be 10 to 15 digits, optionally starting with '+'.");
+        if (!validatePhone(userData.Phone)) {
+            setError("Phone number must be at least 10 digits.");
             setIsLoading(false);
             return;
         }
 
-        const formatPhoneNumber = (value) => {
-            // Remove all non-digit characters
-            const digits = value.replace(/\D/g, "");
-
-            // Format: +355 67 123 4567 or general format with spacing
-            if (digits.startsWith("355") && digits.length > 3) {
-                const code = digits.slice(0, 3);
-                const part1 = digits.slice(3, 5);
-                const part2 = digits.slice(5, 8);
-                const part3 = digits.slice(8, 12);
-                return `+${code}${part1 ? " " + part1 : ""}${part2 ? " " + part2 : ""}${part3 ? " " + part3 : ""}`;
-            }
-
-            // General fallback: space every 3-4 digits
-            const match = value.match(/^(\+\d{1,4})/);
-            const prefix = match ? match[1] : "";
-
-            // Group remaining digits in 3s or 4s
-            const groups = digits.match(/.{1,3}/g) || [];
-            return `${prefix} ${groups.join(" ")}`.trim();
-        };
-
         try {
             const response = await fetch("/api/auth/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password, phone }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    Email: userData.Email,
+                    PasswordHash: userData.PasswordHash,
+                    Phone: userData.Phone
+                }),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Registration failed");
+                if (data.field === "email") {
+                    setError(data.message);
+                } else {
+                    setError(data.message || "Registration failed. Please try again.");
+                }
+                return;
             }
 
-            navigate("/login"); // Redirect to login after successful registration
+            setSuccess(true);
+            setTimeout(() => navigate("/login"), 2000);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Registration failed. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
+
+    const isPhoneError = touched.Phone && !validatePhone(userData.Phone);
 
     return (
         <div className="auth-container">
             <div className="auth-card">
                 <h2 className="auth-title">Register</h2>
                 {error && <div className="alert alert-danger">{error}</div>}
+                {success && <div className="alert alert-success">Registration successful!</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="email" className="form-label">
-                            Email
-                        </label>
+                        <label className="form-label">Email</label>
                         <input
                             type="email"
                             className="form-control"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="Email"
+                            value={userData.Email}
+                            onChange={handleChange}
                             required
                         />
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="password" className="form-label">
-                            Password
-                        </label>
+                        <label className="form-label">Password</label>
                         <input
                             type="password"
                             className="form-control"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="PasswordHash"
+                            value={userData.PasswordHash}
+                            onChange={handleChange}
                             required
                             minLength={6}
                         />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="phone" className="form-label">
-                            Phone Number
-                        </label>
+                        <label className="form-label">Phone Number</label>
                         <input
                             type="tel"
-                            className="form-control"
-                            id="phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            className={`form-control ${isPhoneError ? "is-invalid" : ""}`}
+                            name="Phone"
+                            value={userData.Phone}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        {isPhoneError && (
+                            <div className="invalid-feedback">
+                                Please enter a valid phone number (minimum 10 digits)
+                            </div>
+                        )}
                     </div>
 
                     <button
                         type="submit"
-                        className="btn btn-primary w-100 auth-button"
+                        className="btn btn-primary w-100"
                         disabled={isLoading}
                     >
-                        {isLoading ? "Registering..." : "Register"}
+                        {isLoading ? "Processing..." : "Register"}
                     </button>
                 </form>
 
@@ -146,7 +170,7 @@ const Register = () => {
                         className="btn btn-link p-0"
                         onClick={() => navigate("/login")}
                     >
-                        Login here
+                        Login
                     </button>
                 </div>
             </div>

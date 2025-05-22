@@ -28,6 +28,7 @@ export function AuthProvider({ children }) {
         navigate('/login'); // Redirect to login after logout
     };
 
+
     return (
         <AuthContext.Provider value={{ currentUser, login, logout }}>
             {children}
