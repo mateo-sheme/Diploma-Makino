@@ -85,11 +85,11 @@ namespace Project.Server.Controllers
         public IActionResult GetImage(int id, int imageId)
         {
             var image = _db.Car_Images
-                .FirstOrDefault(i => i.ID == imageId && i.Car_ID == id);
+                .FirstOrDefault(i => i.Image_ID == imageId && i.Car_ID == id);
 
             if (image == null) return NotFound();
 
-            return File(image.ImageData, image.ContentType);
+            return File(image.Image_Data, image.Content_Type);
         }
 
         [HttpGet]
@@ -138,9 +138,9 @@ namespace Project.Server.Controllers
 
                         carImages.Add(new Car_Image
                         {
-                            ImageData = memoryStream.ToArray(),
-                            ContentType = imageFile.ContentType,
-                            IsPrimary = carImages.Count == 0
+                            Image_Data = memoryStream.ToArray(),
+                            Content_Type = imageFile.ContentType,
+                            Is_Primary = carImages.Count == 0
                         });
                     }
         }

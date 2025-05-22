@@ -7,13 +7,13 @@ namespace Project.Server.Entities
     public class Car_Image
     {
         [Key]
-        public int ID { get; set; }
+        public int Image_ID { get; set; }
 
-        public byte[] ImageData { get; set; }  // Binary data
-        public string ContentType { get; set; } // "image/jpeg", "image/png" etc.
+        public byte[] Image_Data { get; set; }  // Binary data
+        public string Content_Type { get; set; } // "image/jpeg", "image/png" etc.
 
         [Required]
-        public bool IsPrimary { get; set; }
+        public bool Is_Primary { get; set; }
 
         [ForeignKey("Car_ID")]
         public int Car_ID { get; set; }

@@ -13,6 +13,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Cars_Sale> Cars_Sale { get; set; } //Dbset <emri i klases qe deklarova> me emrin qe do marri ne db
     public DbSet<User> Users { get; set; }
     public DbSet<Car_Image> Car_Images { get; set; }
+    public DbSet<Diary_Car> Diary_Car { get; set; }
+    public DbSet<Maintenance_Record> Maintenance_Record { get; set; }  
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,5 +31,11 @@ public class ApplicationDbContext : DbContext
             .WithOne(i => i.Car)
             .HasForeignKey(i => i.Car_ID)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Diary_Car>()
+          .HasMany(d => d.Maintenance_Record)
+          .WithOne(m => m.Car)
+          .HasForeignKey(m => m.User_Car_ID)
+           .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -20,7 +20,7 @@ namespace Project.Server.Entities
         public string Phone { get; set; } = string.Empty;
 
         public ICollection<Cars_Sale> Cars { get; set; } = new List<Cars_Sale>();
-
+        public ICollection<Diary_Car> Diary_Car { get; set; } = [];
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
