@@ -1,6 +1,7 @@
-﻿import { useState } from "react";
+﻿import { useState, useContext } from "react";
 import "bootswatch/dist/Litera/bootstrap.css";
 import "./Sell.css";
+import { AuthContext } from "../../contexts/AuthContext"; // Adjust path as needed
 
 const carBrands = {
     Toyota: ["Corolla", "Camry", "RAV4", "Prius", "Hilux"],
@@ -24,6 +25,9 @@ const initialForm = {
 };
 
 export default function Sell() {
+    const { currentUser } = useContext(AuthContext);
+    const userId = currentUser?.userId;  // adjust depending on your user object
+
     const [formData, setFormData] = useState(initialForm);
     const [images, setImages] = useState([]);
     const [error, setError] = useState(null);
@@ -39,7 +43,7 @@ export default function Sell() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             [name]: value,
             ...(name === "Brand" ? { Model: "" } : {}),
@@ -66,6 +70,10 @@ export default function Sell() {
             setError("Please upload at least one image");
             return false;
         }
+        if (!userId) {
+            setError("User not authenticated.");
+            return false;
+        }
         return true;
     };
 
@@ -88,14 +96,18 @@ export default function Sell() {
                 formDataToSend.append(key, value);
             });
 
+            // Append the user ID here
+            formDataToSend.append("userId", userId);
+
             // Append images with correct field name
             images.forEach((image) => {
-                formDataToSend.append("images", image); // Must match the parameter name in your API
+                formDataToSend.append("images", image); // Make sure your backend expects 'images'
             });
 
             const response = await fetch("/api/car", {
                 method: "POST",
-                body: formDataToSend // Don't set Content-Type header for FormData
+                body: formDataToSend,
+                credentials: 'include'
             });
 
             if (!response.ok) {
@@ -112,6 +124,7 @@ export default function Sell() {
             setIsSubmitting(false);
         }
     };
+
     return (
         <div className="container py-4">
             <h2 className="text-center text-white mb-4">Sell Your Car</h2>
@@ -195,7 +208,7 @@ export default function Sell() {
                                     src={URL.createObjectURL(img)}
                                     alt="preview"
                                     className="img-fluid rounded"
-                                    style={{ height: '100px', objectFit: 'cover' }}
+                                    style={{ height: "100px", objectFit: "cover" }}
                                 />
                             </div>
                         ))}

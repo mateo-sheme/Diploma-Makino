@@ -13,9 +13,24 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDistributedMemoryCache(); // Required for session storage
+builder.Services.AddSession(options => {
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; // Make session cookie essential
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+
+builder.Services.AddSession(options => {
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseSession();
 
 app.UseAuthorization();
 

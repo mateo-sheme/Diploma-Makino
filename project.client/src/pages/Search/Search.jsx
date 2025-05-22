@@ -168,7 +168,7 @@ const Search = () => {
                                         <div className="car-card card h-100 shadow-sm d-flex flex-column">
                                             {car.images?.length > 0 ? (
                                                 <img
-                                                    src={`/api/car/${car.car_ID}/image/${car.images[0].id}`}
+                                                    src={`/api/car/${car.car_ID}/image/${car.images[0].image_ID}`}
                                                     className="card-img-top car-image"
                                                     alt={`${car.brand} ${car.model}`}
                                                     onError={(e) => {

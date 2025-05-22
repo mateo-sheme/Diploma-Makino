@@ -43,32 +43,13 @@ function CarDetailsPage() {
                                 <Carousel.Item key={index}>
                                     <img
                                         className="d-block w-100 main-car-image"
-                                        src={`/api/car/${car.car_ID}/image/${image.id}`}
+                                        src={`/api/car/${car.car_ID}/image/${image.image_ID}`}
                                         alt={`${car.brand} ${car.model} - ${index + 1}`}
                                     />
                                 </Carousel.Item>
                             ))}
                         </Carousel>
-                    </div>
-
-                    {/* Thumbnail Navigation */}
-                    <div className="thumbnail-gallery">
-                        <div className="d-flex flex-wrap">
-                            {car.images?.map((image, index) => (
-                                <div
-                                    key={index}
-                                    className={`thumbnail-item ${index === activeIndex ? 'active' : ''}`}
-                                    onClick={() => setActiveIndex(index)}
-                                >
-                                    <img
-                                        src={`/api/car/${car.car_ID}/image/${image.id}`}
-                                        alt={`Thumbnail ${index + 1}`}
-                                        className="img-thumbnail"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    </div>    
                 </div>
 
                 {/* Car Info Column */}

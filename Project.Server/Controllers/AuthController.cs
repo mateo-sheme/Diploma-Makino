@@ -85,6 +85,8 @@ namespace Project.Server.Controllers
                 return Unauthorized(new { message = "Invalid email or password" });
             }
 
+            HttpContext.Session.SetInt32("UserId", user.User_ID);
+
             return Ok(new
             {
                 userId = user.User_ID,

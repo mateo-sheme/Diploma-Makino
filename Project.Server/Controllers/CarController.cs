@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Server.Data;
 using Project.Server.Entities;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Project.Server.Controllers
@@ -81,11 +83,11 @@ namespace Project.Server.Controllers
             return Ok(car);
         }
 
-        [HttpGet("{id}/image/{imageId}")]
-        public IActionResult GetImage(int id, int imageId)
+        [HttpGet("{carid}/image/{imageId}")]
+        public IActionResult GetImage(int carid, int imageId)
         {
             var image = _db.Car_Images
-                .FirstOrDefault(i => i.Image_ID == imageId && i.Car_ID == id);
+                .FirstOrDefault(i => i.Image_ID == imageId && i.Car_ID == carid);
 
             if (image == null) return NotFound();
 
@@ -111,6 +113,14 @@ namespace Project.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Cars_Sale>> CreateCar([FromForm] Cars_Sale car, [FromForm] List<IFormFile> images)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            car.User_ID = userId.Value;
 
             if (!ModelState.IsValid)
             {
