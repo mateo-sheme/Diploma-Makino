@@ -96,12 +96,7 @@ export default function DiaryCar() {
             }));
 
             setCars(normalizedCars);
-            if (selectedCar) {
-                const updatedSelectedCar = normalizedCars.find(c => c.User_Car_ID === selectedCar.User_Car_ID);
-                setSelectedCar(updatedSelectedCar || normalizedCars[0] || null);
-            } else {
-                setSelectedCar(normalizedCars.length > 0 ? normalizedCars[0] : null);
-            }
+            setSelectedCar(normalizedCars.length > 0 ? normalizedCars[0] : null);
         } catch (err) {
             console.error("Error fetching cars:", err);
             setError(err.message);
@@ -275,11 +270,27 @@ export default function DiaryCar() {
                 throw new Error(errorData.message || "Failed to save maintenance record");
             }
 
-            // Refresh both the car and maintenance records
-            await fetchUserCars(); // This will update the cars list and selected car
-            await fetchMaintenanceRecords(selectedCar.User_Car_ID); // This will update the maintenance records
+            const savedRecord = await response.json();
 
-            // Reset form and state
+            if (editingMaintenance) {
+                setMaintenanceRecords(maintenanceRecords.map(r =>
+                    r.Record_ID === savedRecord.Record_ID ? savedRecord : r
+                ));
+            } else {
+                setMaintenanceRecords([...maintenanceRecords, savedRecord]);
+            }
+
+            if (parseInt(maintenanceForm.Kilometers) > parseInt(selectedCar.Current_Kilometers)) {
+                const updatedCar = {
+                    ...selectedCar,
+                    Current_Kilometers: maintenanceForm.Kilometers
+                };
+                setSelectedCar(updatedCar);
+                setCars(cars.map(c =>
+                    c.User_Car_ID === updatedCar.User_Car_ID ? updatedCar : c
+                ));
+            }
+
             setMaintenanceForm({
                 Kilometers: "",
                 Maintenance_Type: "",
