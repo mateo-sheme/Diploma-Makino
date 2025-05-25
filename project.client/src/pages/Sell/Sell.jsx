@@ -1,7 +1,8 @@
 ﻿import { useState, useContext } from "react";
 import "bootswatch/dist/Litera/bootstrap.css";
 import "./Sell.css";
-import { AuthContext } from "../../contexts/AuthContext"; // Adjust path as needed
+import { AuthContext } from "../../contexts/AuthContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const carBrands = {
     Toyota: ["Corolla", "Camry", "RAV4", "Prius", "Hilux"],
@@ -25,6 +26,7 @@ const initialForm = {
 };
 
 export default function Sell() {
+    const { t } = useLanguage();
     const { currentUser } = useContext(AuthContext);
     const userId = currentUser?.userId;  // adjust depending on your user object
 
@@ -127,24 +129,24 @@ export default function Sell() {
 
     return (
         <div className="container py-4">
-            <h2 className="text-center text-white mb-4">Sell Your Car</h2>
+            <h2 className="text-center text-white mb-4">{t('sellYourCar')}</h2>
 
             <div className="row g-4">
                 <form className="col-md-6" onSubmit={handleSubmit}>
                     {error && <div className="alert alert-danger">{error}</div>}
-                    {success && <div className="alert alert-success">Listing created!</div>}
+                    {success && <div className="alert alert-success">{t('listingCreated')}</div>}
 
                     {Object.entries({
-                        VIN: "VIN",
-                        Brand: "Brand",
-                        Model: "Model",
-                        Year: "Year",
-                        Kilometers: "Kilometers",
-                        Fuel: "Fuel Type",
-                        Transmission: "Transmission",
-                        Usage: "Usage",
-                        Price: "Price €",
-                        Contact_Number: "Contact Number",
+                        VIN: t('vin'),
+                        Brand: t('brand'),
+                        Model: t('model'),
+                        Year: t('year'),
+                        Kilometers: t('kilometers'),
+                        Fuel: t('fuelType'),
+                        Transmission: t('transmission'),
+                        Usage: t('usage'),
+                        Price: t('price'),
+                        Contact_Number: t('contactNumber'),
                     }).map(([key, label]) => (
                         <div className="mb-3" key={key}>
                             <label className="form-label text-white">{label}*</label>
@@ -157,7 +159,7 @@ export default function Sell() {
                                     required
                                     disabled={key === "Model" && !formData.Brand}
                                 >
-                                    <option value="">Select...</option>
+                                    <option value="">{t('select')}...</option>
                                     {(key === "Brand"
                                         ? Object.keys(carBrands)
                                         : key === "Model"
@@ -187,12 +189,12 @@ export default function Sell() {
                     ))}
 
                     <button className="btn btn-primary w-100" disabled={isSubmitting}>
-                        {isSubmitting ? "Submitting..." : "Submit Listing"}
+                        {isSubmitting ? t('submitting') : t('submitListing')}
                     </button>
                 </form>
 
                 <div className="col-md-6">
-                    <label className="form-label text-white">Upload up to 10 photos</label>
+                    <label className="form-label text-white">{t('uploadPhotos')}</label>
                     <input
                         type="file"
                         className="form-control"

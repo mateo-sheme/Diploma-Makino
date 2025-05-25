@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace Project.Server.Controllers
 {
     [ApiController]
-    [Route("api/diarycar")]
+    [Route("api/[controller]")]
     public class DiaryCarController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -111,7 +111,7 @@ namespace Project.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Diary_Car>> UpdateCar(int id, [FromForm] Diary_Car carUpdate, [FromForm] IFormFile carImage)
+        public async Task<ActionResult<Diary_Car>> UpdateCar(int id, [FromForm] Diary_Car carUpdate, [FromForm] IFormFile Car_Image)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -127,28 +127,36 @@ namespace Project.Server.Controllers
                 return NotFound();
             }
 
+            // Update all fields
             existingCar.Nickname_Car = carUpdate.Nickname_Car ?? existingCar.Nickname_Car;
             existingCar.VIN = carUpdate.VIN ?? existingCar.VIN;
             existingCar.Brand = carUpdate.Brand ?? existingCar.Brand;
             existingCar.Model = carUpdate.Model ?? existingCar.Model;
             existingCar.License_Plate = carUpdate.License_Plate ?? existingCar.License_Plate;
-            existingCar.Current_Kilometers = carUpdate.Current_Kilometers > 0
-                ? carUpdate.Current_Kilometers
-                : existingCar.Current_Kilometers;
+            existingCar.Current_Kilometers = carUpdate.Current_Kilometers;
             existingCar.Fuel = carUpdate.Fuel ?? existingCar.Fuel;
-            existingCar.Insurance_Expiry = carUpdate.Insurance_Expiry ?? existingCar.Insurance_Expiry;
-            existingCar.Inspection_Expiry = carUpdate.Inspection_Expiry ?? existingCar.Inspection_Expiry;
+            existingCar.Insurance_Expiry = carUpdate.Insurance_Expiry;
+            existingCar.Inspection_Expiry = carUpdate.Inspection_Expiry;
 
-            if (carImage != null && carImage.Length > 0)
+            // Only update image if a new one is provided
+            if (Car_Image != null && Car_Image.Length > 0)
             {
                 using var memoryStream = new MemoryStream();
-                await carImage.CopyToAsync(memoryStream);
+                await Car_Image.CopyToAsync(memoryStream);
                 existingCar.Car_Image = memoryStream.ToArray();
-                existingCar.Content_Type = carImage.ContentType;
+                existingCar.Content_Type = Car_Image.ContentType;
             }
+           
 
-            await _db.SaveChangesAsync();
-            return Ok(existingCar);
+            try
+            {
+                await _db.SaveChangesAsync();
+                return Ok(existingCar);
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, "Error updating car: " + ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]

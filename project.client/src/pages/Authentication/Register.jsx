@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Auth.css";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Register = () => {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [userData, setUserData] = useState({
         Email: "",
         PasswordHash: "",
@@ -55,19 +57,19 @@ const Register = () => {
         }
 
         if (!emailRegex.test(userData.Email)) {
-            setError("Invalid email format.");
+            setError(t("invalidEmail"));
             setIsLoading(false);
             return;
         }
 
         if (!passwordRegex.test(userData.PasswordHash)) {
-            setError("Password must be at least 6 characters and include a number.");
+            setError(t("passwordRequirements"));
             setIsLoading(false);
             return;
         }
 
         if (!validatePhone(userData.Phone)) {
-            setError("Phone number must be at least 10 digits.");
+            setError(t("phoneRequirements"));
             setIsLoading(false);
             return;
         }
@@ -89,7 +91,7 @@ const Register = () => {
                 if (data.field === "email") {
                     setError(data.message);
                 } else {
-                    setError(data.message || "Registration failed. Please try again.");
+                    setError(data.message || t("registrationFail"));
                 }
                 return;
             }
@@ -126,7 +128,7 @@ const Register = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Password</label>
+                        <label className="form-label">{t("password")}</label>
                         <input
                             type="password"
                             className="form-control"
@@ -139,7 +141,7 @@ const Register = () => {
                     </div>
 
                     <div className="mb-4">
-                        <label className="form-label">Phone Number</label>
+                        <label className="form-label">{t("phoneNumber")}</label>
                         <input
                             type="tel"
                             className={`form-control ${isPhoneError ? "is-invalid" : ""}`}
@@ -161,7 +163,7 @@ const Register = () => {
                         className="btn btn-primary w-100"
                         disabled={isLoading}
                     >
-                        {isLoading ? "Processing..." : "Register"}
+                        {isLoading ? t("processing") : t("register")}
                     </button>
                 </form>
 

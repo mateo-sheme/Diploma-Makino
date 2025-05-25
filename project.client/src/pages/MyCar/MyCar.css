@@ -1,12 +1,15 @@
 .diary-container {
     background-color: #222;
     min-height: 100vh;
-    padding-top: 20px;
-    padding-bottom: 40px;
 }
 
 .form-label {
     color:white;
+}
+
+.edit-btn{
+    color: white;
+    outline-color: white;
 }
 
 .modal-body {
@@ -16,7 +19,7 @@
 .card {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .card-header {

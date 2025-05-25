@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import './CarDetails.css';
+import { useLanguage } from "../../contexts/LanguageContext";
 
 function CarDetailsPage() {
     const { id } = useParams();
+    const { t    } = useLanguage();
     const [car, setCar] = useState(null);
     const [error, setError] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -61,25 +63,25 @@ function CarDetailsPage() {
 
                             <div className="specs-grid mb-4">
                                 <div className="spec-item">
-                                    <span className="spec-label">Year</span>
+                                    <span className="spec-label">{t("year")}</span>
                                     <span className="spec-value">{car.year}</span>
                                 </div>
                                 <div className="spec-item">
-                                    <span className="spec-label">Kilometers</span>
+                                    <span className="spec-label">{t("kilometers")}</span>
                                     <span className="spec-value">{car.kilometers?.toLocaleString()} km</span>
                                 </div>
                                 <div className="spec-item">
-                                    <span className="spec-label">Fuel</span>
+                                    <span className="spec-label">{t("fuelType")}</span>
                                     <span className="spec-value">{car.fuel}</span>
                                 </div>
                                 <div className="spec-item">
-                                    <span className="spec-label">Transmission</span>
+                                    <span className="spec-label">{t("transmission")} </span>
                                     <span className="spec-value">{car.transmission}</span>
                                 </div>
                             </div>
 
                             <a href={`tel:${car.Contact_Number}`} className="btn btn-primary btn-lg w-100 mb-3">
-                                <i className="bi bi-telephone me-2"></i> Contact Seller
+                                <i className="bi bi-telephone me-2"></i>{t("contactSeller")}
                             </a>
                         </div>
                     </div>

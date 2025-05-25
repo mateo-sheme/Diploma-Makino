@@ -8,7 +8,7 @@ function Home() {
             {/* Main Banner Section */}
             <div className="banner-container">
                 <img
-                    src="/src/assets/Baner.jpg"
+                    src="/src/assets/Baner.png"
                     alt="Makino Car Marketplace"
                     className="banner-image w-100"
                 />

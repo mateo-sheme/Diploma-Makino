@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useMemo } from "react";
 import "bootswatch/dist/Litera/bootstrap.css";
 import "./MyCar.css";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const carBrands = {
     Toyota: ["Corolla", "Camry", "RAV4", "Prius", "Hilux"],
@@ -24,7 +25,12 @@ const maintenanceTypes = [
     "Other"
 ];
 
+// Local storage for maintenance records
+const localMaintenanceRecords = {};
+
 export default function DiaryCar() {
+    const { t } = useLanguage();
+    const [initialLoad, setInitialLoad] = useState(true);
     const { currentUser } = useContext(AuthContext);
     const [cars, setCars] = useState([]);
     const [selectedCar, setSelectedCar] = useState(null);
@@ -58,16 +64,27 @@ export default function DiaryCar() {
     });
 
     useEffect(() => {
-        if (currentUser?.userId) {
-            fetchUserCars();
+        if (currentUser?.userId && initialLoad) {
+            const loadData = async () => {
+                setLoading(true);
+                try {
+                    await fetchUserCars();
+                } finally {
+                    setInitialLoad(false);
+                    setLoading(false);
+                }
+            };
+            loadData();
         }
-    }, [currentUser]);
+    }, [currentUser?.userId, initialLoad]);
 
     useEffect(() => {
-        if (selectedCar) {
-            fetchMaintenanceRecords(selectedCar.User_Car_ID);
+        if (selectedCar?.User_Car_ID) {
+            // Load from local storage instead of API
+            const records = localMaintenanceRecords[selectedCar.User_Car_ID] || [];
+            setMaintenanceRecords(records);
         }
-    }, [selectedCar]);
+    }, [selectedCar?.User_Car_ID]);
 
     const fetchUserCars = async () => {
         setLoading(true);
@@ -97,39 +114,18 @@ export default function DiaryCar() {
 
             setCars(normalizedCars);
             setSelectedCar(normalizedCars.length > 0 ? normalizedCars[0] : null);
+
+            // Initialize local maintenance storage for each car
+            normalizedCars.forEach(car => {
+                if (!localMaintenanceRecords[car.User_Car_ID]) {
+                    localMaintenanceRecords[car.User_Car_ID] = [];
+                }
+            });
         } catch (err) {
             console.error("Error fetching cars:", err);
             setError(err.message);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchMaintenanceRecords = async (carId) => {
-        try {
-            const response = await fetch(`/api/diarycar/${carId}/maintenance`, {
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-
-            const normalizedRecords = data.map(record => ({
-                Record_ID: record.record_ID || record.Record_ID,
-                User_Car_ID: record.user_Car_ID || record.User_Car_ID,
-                Record_Date: record.record_Date || record.Record_Date,
-                Kilometers: record.kilometers || record.Kilometers,
-                Maintenance_Type: record.maintenance_Type || record.Maintenance_Type,
-                Notes: record.notes || record.Notes || "",
-                Next_Maintenance_Km: record.next_Maintenance_Km || record.Next_Maintenance_Km
-            }));
-
-            setMaintenanceRecords(normalizedRecords);
-        } catch (err) {
-            console.error("Error fetching maintenance records:", err);
-            setError("Failed to load maintenance records");
         }
     };
 
@@ -197,6 +193,8 @@ export default function DiaryCar() {
             } else {
                 setCars([...cars, savedCar]);
                 setSelectedCar(savedCar);
+                // Initialize local maintenance storage for new car
+                localMaintenanceRecords[savedCar.User_Car_ID] = [];
             }
 
             setShowAddCarForm(false);
@@ -220,8 +218,10 @@ export default function DiaryCar() {
     };
 
     const handleEditCar = (carId) => {
-        setEditingCarId(carId);
         const carToEdit = cars.find(c => c.User_Car_ID === carId);
+        if (!carToEdit) return;
+
+        setEditingCarId(carId);
         setCarForm({
             Nickname_Car: carToEdit.Nickname_Car || "",
             VIN: carToEdit.VIN || "",
@@ -233,10 +233,73 @@ export default function DiaryCar() {
             Insurance_Expiry: carToEdit.Insurance_Expiry ? carToEdit.Insurance_Expiry.split('T')[0] : "",
             Inspection_Expiry: carToEdit.Inspection_Expiry ? carToEdit.Inspection_Expiry.split('T')[0] : ""
         });
+
+        setImage(null);
         setShowAddCarForm(true);
     };
 
-    const handleAddMaintenanceSubmit = async (e) => {
+    const handleEditCarSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const formData = new FormData();
+            Object.entries(carForm).forEach(([key, value]) => {
+                if (value) formData.append(key, value);
+            });
+            formData.append("User_ID", currentUser.userId);
+
+            // Only append Car_Image if a new one is selected
+            if (image) {
+                formData.append("Car_Image", image);
+            } else {
+                // Indicate we're keeping the existing image
+                formData.append("KeepExistingImage", "true");
+            }
+
+            const response = await fetch(`/api/diarycar/${editingCarId}`, {
+                method: "PUT",
+                body: formData,
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to update car");
+            }
+
+            const updatedCar = await response.json();
+
+            setCars(cars.map(c =>
+                c.User_Car_ID === updatedCar.User_Car_ID ? updatedCar : c
+            ));
+
+            if (selectedCar?.User_Car_ID === updatedCar.User_Car_ID) {
+                setSelectedCar(updatedCar);
+            }
+
+            setShowAddCarForm(false);
+            setEditingCarId(null);
+            setCarForm({
+                Nickname_Car: "",
+                VIN: "",
+                Brand: "",
+                Model: "",
+                License_Plate: "",
+                Current_Kilometers: "",
+                Fuel: "",
+                Insurance_Expiry: "",
+                Inspection_Expiry: ""
+            });
+            setImage(null);
+            setSuccess('Car updated successfully!');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleAddMaintenanceSubmit = (e) => {
         e.preventDefault();
         setError(null);
         setSuccess(null);
@@ -244,42 +307,30 @@ export default function DiaryCar() {
         try {
             if (!selectedCar) throw new Error("No car selected");
 
-            const maintenanceData = {
+            const newRecord = {
+                Record_ID: editingMaintenance?.Record_ID || Date.now(), // Use timestamp as ID for new records
                 User_Car_ID: selectedCar.User_Car_ID,
+                Record_Date: new Date().toISOString(),
                 Kilometers: parseInt(maintenanceForm.Kilometers),
                 Maintenance_Type: maintenanceForm.Maintenance_Type,
                 Next_Maintenance_Km: parseInt(maintenanceForm.Next_Maintenance_Km),
-                Notes: maintenanceForm.Notes,
-                Record_Date: new Date().toISOString()
+                Notes: maintenanceForm.Notes
             };
 
-            const url = editingMaintenance
-                ? `/api/diarycar/${selectedCar.User_Car_ID}/maintenance/${editingMaintenance.Record_ID}`
-                : `/api/diarycar/${selectedCar.User_Car_ID}/maintenance`;
-            const method = editingMaintenance ? "PUT" : "POST";
-
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(maintenanceData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to save maintenance record");
-            }
-
-            const savedRecord = await response.json();
-
+            // Update local storage instead of API
             if (editingMaintenance) {
-                setMaintenanceRecords(maintenanceRecords.map(r =>
-                    r.Record_ID === savedRecord.Record_ID ? savedRecord : r
-                ));
+                const updatedRecords = (localMaintenanceRecords[selectedCar.User_Car_ID] || []).map(r =>
+                    r.Record_ID === newRecord.Record_ID ? newRecord : r
+                );
+                localMaintenanceRecords[selectedCar.User_Car_ID] = updatedRecords;
+                setMaintenanceRecords(updatedRecords);
             } else {
-                setMaintenanceRecords([...maintenanceRecords, savedRecord]);
+                const updatedRecords = [...(localMaintenanceRecords[selectedCar.User_Car_ID] || []), newRecord];
+                localMaintenanceRecords[selectedCar.User_Car_ID] = updatedRecords;
+                setMaintenanceRecords(updatedRecords);
             }
 
+            // Update car's current kilometers if needed
             if (parseInt(maintenanceForm.Kilometers) > parseInt(selectedCar.Current_Kilometers)) {
                 const updatedCar = {
                     ...selectedCar,
@@ -332,24 +383,22 @@ export default function DiaryCar() {
             if (selectedCar?.User_Car_ID === carId) {
                 setSelectedCar(cars.length > 1 ? cars.find(c => c.User_Car_ID !== carId) : null);
             }
+            // Remove local maintenance records for deleted car
+            delete localMaintenanceRecords[carId];
             setSuccess("Car deleted successfully!");
         } catch (err) {
             setError(err.message);
         }
     };
 
-    const handleDeleteMaintenance = async (recordId) => {
+    const handleDeleteMaintenance = (recordId) => {
         if (!window.confirm("Are you sure you want to delete this maintenance record?")) return;
 
         try {
-            const response = await fetch(`/api/diarycar/${selectedCar.User_Car_ID}/maintenance/${recordId}`, {
-                method: "DELETE",
-                credentials: 'include'
-            });
-
-            if (!response.ok) throw new Error("Failed to delete maintenance record");
-
-            setMaintenanceRecords(prev => prev.filter(r => r.Record_ID !== recordId));
+            // Update local storage instead of API
+            const updatedRecords = (localMaintenanceRecords[selectedCar.User_Car_ID] || []).filter(r => r.Record_ID !== recordId);
+            localMaintenanceRecords[selectedCar.User_Car_ID] = updatedRecords;
+            setMaintenanceRecords(updatedRecords);
             setSuccess("Maintenance record deleted successfully!");
         } catch (err) {
             setError(err.message);
@@ -374,18 +423,18 @@ export default function DiaryCar() {
                     onClick={() => setSelectedCar(car)}
                 >
                     <div>
-                        <strong>{car.Nickname_Car || "Unnamed Car"}</strong>
+                        <strong>{car.Nickname_Car || t('unnamedCar')}</strong>
                         <div className="small text-muted">{car.Brand} {car.Model}</div>
                     </div>
                     <div>
                         <button
-                            className="btn btn-sm btn-outline-primary me-1"
+                            className="edit-btn btn btn-sm btn-outline-primary me-1"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleEditCar(car.User_Car_ID);
                             }}
                         >
-                            Edit
+                            {t('edit')}
                         </button>
                         <button
                             className="btn btn-sm btn-outline-danger"
@@ -394,14 +443,14 @@ export default function DiaryCar() {
                                 handleDeleteCar(car.User_Car_ID);
                             }}
                         >
-                            Delete
+                            {t('delete')}
                         </button>
                     </div>
                 </button>
             ))}
             {cars.length === 0 && !loading && (
                 <div className="list-group-item text-muted">
-                    No cars added yet
+                    {t('noCarsAdded')}
                 </div>
             )}
         </div>
@@ -414,7 +463,7 @@ export default function DiaryCar() {
             <div className="card">
                 <div className="card-header bg-primary text-white">
                     <h5 className="mb-0">
-                        {selectedCar.Nickname_Car || "Unnamed Car"}
+                        {selectedCar.Nickname_Car || t('unnamedCar')}
                         <button
                             className="btn btn-sm btn-light float-end"
                             onClick={() => {
@@ -422,7 +471,7 @@ export default function DiaryCar() {
                                 setShowAddMaintenanceForm(true);
                             }}
                         >
-                            Add Maintenance
+                            {t('addMaintenance')}
                         </button>
                     </h5>
                 </div>
@@ -445,103 +494,59 @@ export default function DiaryCar() {
                                     <strong>VIN:</strong> {selectedCar.VIN}
                                 </li>
                                 <li className="list-group-item">
-                                    <strong>License Plate:</strong> {selectedCar.License_Plate}
+                                    <strong>{t("licensePlate")}:</strong> {selectedCar.License_Plate}
                                 </li>
                                 <li className="list-group-item">
-                                    <strong>Current KM:</strong> {selectedCar.Current_Kilometers.toLocaleString()}
+                                    <strong>{t("currentKm")}:</strong> {selectedCar.Current_Kilometers.toLocaleString()}
                                 </li>
                                 <li className="list-group-item">
-                                    <strong>Fuel Type:</strong> {selectedCar.Fuel}
+                                    <strong>{t("fuel")}:</strong> {selectedCar.Fuel}
                                 </li>
                             </ul>
                         </div>
                         <div className="col-md-8">
-                            <h6>Upcoming Maintenance</h6>
+                            <h6 className="mt-4">{t("maintenanceHistory")}</h6>
                             <div className="table-responsive">
                                 <table className="table table-sm">
                                     <thead>
                                         <tr>
-                                            <th>Type</th>
-                                            <th>Due KM</th>
-                                            <th>Remaining KM</th>
-                                            <th>Action</th>
+                                            <th>{t('date')}</th>
+                                            <th>{t('type')}</th>
+                                            <th>{t('kilometers')}</th>
+                                            <th>{t('nextMaintenanceKm')}</th>
+                                            <th>{t('notes')}</th>
+                                            <th>{t('action')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {maintenanceRecords
-                                            .filter(r => r.Next_Maintenance_Km > selectedCar.Current_Kilometers)
-                                            .sort((a, b) => a.Next_Maintenance_Km - b.Next_Maintenance_Km)
-                                            .map(record => (
-                                                <tr key={record.Record_ID} className={record.Next_Maintenance_Km - selectedCar.Current_Kilometers < 1000 ? 'table-warning' : ''}>
-                                                    <td>{record.Maintenance_Type}</td>
-                                                    <td>{record.Next_Maintenance_Km.toLocaleString()}</td>
-                                                    <td>{(record.Next_Maintenance_Km - selectedCar.Current_Kilometers).toLocaleString()}</td>
-                                                    <td>
-                                                        <button
-                                                            className="btn btn-sm btn-outline-primary me-1"
-                                                            onClick={() => handleEditMaintenance(record)}
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-sm btn-outline-danger"
-                                                            onClick={() => handleDeleteMaintenance(record.Record_ID)}
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        {maintenanceRecords.filter(r => r.Next_Maintenance_Km > selectedCar.Current_Kilometers).length === 0 && (
-                                            <tr>
-                                                <td colSpan="4" className="text-muted">No upcoming maintenance</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <h6 className="mt-4">Maintenance History</h6>
-                            <div className="table-responsive">
-                                <table className="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Type</th>
-                                            <th>KM</th>
-                                            <th>Notes</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {maintenanceRecords
-                                            .filter(r => r.Next_Maintenance_Km <= selectedCar.Current_Kilometers)
                                             .sort((a, b) => new Date(b.Record_Date) - new Date(a.Record_Date))
                                             .map(record => (
                                                 <tr key={record.Record_ID}>
                                                     <td>{new Date(record.Record_Date).toLocaleDateString()}</td>
                                                     <td>{record.Maintenance_Type}</td>
                                                     <td>{record.Kilometers.toLocaleString()}</td>
+                                                    <td>{record.Next_Maintenance_Km?.toLocaleString() || '-'}</td>  {/* Add this cell */}
                                                     <td>{record.Notes || '-'}</td>
                                                     <td>
                                                         <button
                                                             className="btn btn-sm btn-outline-primary me-1"
                                                             onClick={() => handleEditMaintenance(record)}
                                                         >
-                                                            Edit
+                                                            {t('edit')}
                                                         </button>
                                                         <button
                                                             className="btn btn-sm btn-outline-danger"
                                                             onClick={() => handleDeleteMaintenance(record.Record_ID)}
                                                         >
-                                                            Delete
+                                                            {t('delete')}
                                                         </button>
                                                     </td>
                                                 </tr>
                                             ))}
-                                        {maintenanceRecords.filter(r => r.Next_Maintenance_Km <= selectedCar.Current_Kilometers).length === 0 && (
+                                        {maintenanceRecords.length === 0 && (
                                             <tr>
-                                                <td colSpan="5" className="text-muted">No maintenance history</td>
+                                                <td colSpan="6" className="text-muted">{t("noMaintenanceRecord")}</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -568,7 +573,7 @@ export default function DiaryCar() {
 
     return (
         <div className="container py-4 diary-container">
-            <h2 className="text-center text-white mb-4">My Car Diary</h2>
+            <h2 className="text-center text-white mb-4">{t("myCarDiary")}</h2>
 
             {error && <div className="alert alert-danger">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}
@@ -585,7 +590,7 @@ export default function DiaryCar() {
                     <div className="col-md-4 mb-4">
                         <div className="card">
                             <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                <h5 className="mb-0">My Cars</h5>
+                                    <h5 className="mb-0">{t("myCars")}</h5>
                                 <button
                                     className="btn btn-sm btn-light"
                                     onClick={() => {
@@ -593,7 +598,7 @@ export default function DiaryCar() {
                                         setShowAddCarForm(true);
                                     }}
                                 >
-                                    Add Car
+                                        {t('addCar')}
                                 </button>
                             </div>
                             {renderCarsList()}
@@ -605,8 +610,8 @@ export default function DiaryCar() {
                         {selectedCar ? renderCarDetails() : (
                             <div className="card">
                                 <div className="card-body text-center">
-                                    <h5>No car selected</h5>
-                                    <p>Add a car to start tracking maintenance</p>
+                                        <h5>{t("noCarsAdded")}</h5>
+                                        <p>{t("addCarToStart")}</p>
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => {
@@ -614,7 +619,7 @@ export default function DiaryCar() {
                                             setShowAddCarForm(true);
                                         }}
                                     >
-                                        Add Your First Car
+                                            {t('addFirstCar')}
                                     </button>
                                 </div>
                             </div>
@@ -629,7 +634,7 @@ export default function DiaryCar() {
                     <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div className="modal-header bg-primary text-white">
-                                <h5 className="modal-title">{editingCarId ? 'Edit Car' : 'Add New Car'}</h5>
+                                <h5 className="modal-title">{editingCarId ? t('editCar') : t('addNewCar')}</h5>
                                 <button
                                     type="button"
                                     className="btn-close btn-close-white"
@@ -640,7 +645,7 @@ export default function DiaryCar() {
                                     }}
                                 ></button>
                             </div>
-                            <form onSubmit={handleAddCarSubmit}>
+                            <form onSubmit={editingCarId ? handleEditCarSubmit : handleAddCarSubmit}>
                                 <div className="modal-body">
                                     <div className="row">
                                         <div className="col-md-6">
@@ -697,27 +702,26 @@ export default function DiaryCar() {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="col-md-6">
-                                            <div className="mb-3">
-                                                <label className="form-label">Car Image</label>
-                                                <input
-                                                    type="file"
-                                                    className="form-control"
-                                                    accept="image/*"
-                                                    onChange={handleImageChange}
-                                                />
-                                            </div>
-                                            {image && (
-                                                <div className="mt-3">
-                                                    <img
-                                                        src={URL.createObjectURL(image)}
-                                                        alt="Preview"
-                                                        className="img-fluid rounded"
-                                                        style={{ maxHeight: '200px' }}
-                                                    />
-                                                </div>
-                                            )}
+                                        <div className="mb-3">
+                                    <label className="form-label">Car Image</label>
+                                    <input
+                                        type="file"
+                                        className="form-control"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                    />
+                                    {!image && editingCarId && selectedCar?.Car_Image?.length > 0 && (
+                                        <div className="mt-3">
+                                            <p className="small text-muted">Current Image:</p>
+                                            <img
+                                                src={getCarImageUrl(selectedCar)}
+                                                alt="Current Car"
+                                                className="img-fluid rounded"
+                                                style={{ maxHeight: '200px' }}
+                                            />
                                         </div>
+                                    )}
+                                </div>
                                     </div>
                                 </div>
                                 <div className="modal-footer d-flex justify-content-center">

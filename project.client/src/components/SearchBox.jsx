@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import "./Searchbox.css";
+import { useLanguage } from '../contexts/LanguageContext';
 
 const SearchBox = () => {
+    const { t } = useLanguage();
     const [searchParams, setSearchParams] = useState({
         brand: "",
         model: "",
@@ -40,14 +42,10 @@ const SearchBox = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-
-        // Create URL parameters from non-empty fields
         const params = new URLSearchParams();
         Object.entries(searchParams).forEach(([key, value]) => {
             if (value) params.append(key, value);
         });
-
-        // Navigate to search page with parameters
         navigate(`/search?${params.toString()}`);
     };
 
@@ -60,7 +58,7 @@ const SearchBox = () => {
                         value={searchParams.brand}
                         onChange={handleChange}
                     >
-                        <option value="">Any Brand</option>
+                        <option value="">{t('anyBrand')}</option>
                         {Object.keys(carBrands).map((b) => (
                             <option key={b} value={b}>
                                 {b}
@@ -74,7 +72,7 @@ const SearchBox = () => {
                         onChange={handleChange}
                         disabled={!searchParams.brand}
                     >
-                        <option value="">Any Model</option>
+                        <option value="">{t('anyModel')}</option>
                         {models.map((m) => (
                             <option key={m} value={m}>
                                 {m}
@@ -89,7 +87,7 @@ const SearchBox = () => {
                         name="minPrice"
                         value={searchParams.minPrice}
                         onChange={handleChange}
-                        placeholder="Min Price"
+                        placeholder={t('minPrice')}
                     />
 
                     <input
@@ -97,7 +95,7 @@ const SearchBox = () => {
                         name="maxPrice"
                         value={searchParams.maxPrice}
                         onChange={handleChange}
-                        placeholder="Max Price"
+                        placeholder={t('maxPrice')}
                     />
                 </div>
 
@@ -107,9 +105,9 @@ const SearchBox = () => {
                         value={searchParams.usage}
                         onChange={handleChange}
                     >
-                        <option value="">Usage</option>
-                        <option value="Used">Used</option>
-                        <option value="New">New</option>
+                        <option value="">{t('usage')}</option>
+                        <option value="Used">{t('used')}</option>
+                        <option value="New">{t('new')}</option>
                     </select>
 
                     <select
@@ -117,11 +115,11 @@ const SearchBox = () => {
                         value={searchParams.fuelType}
                         onChange={handleChange}
                     >
-                        <option value="">Fuel</option>
-                        <option value="Gasoline">Gasoline</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Electric">Electric</option>
-                        <option value="Hybrid">Hybrid</option>
+                        <option value="">{t('fuel')}</option>
+                        <option value="Gasoline">{t('gasoline')}</option>
+                        <option value="Diesel">{t('diesel')}</option>
+                        <option value="Electric">{t('electric')}</option>
+                        <option value="Hybrid">{t('hybrid')}</option>
                     </select>
 
                     <select
@@ -129,9 +127,9 @@ const SearchBox = () => {
                         value={searchParams.transmission}
                         onChange={handleChange}
                     >
-                        <option value="">Transmission</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Automatic">Automatic</option>
+                        <option value="">{t('transmission')}</option>
+                        <option value="Manual">{t('manual')}</option>
+                        <option value="Automatic">{t('automatic')}</option>
                     </select>
                 </div>
 
@@ -141,7 +139,7 @@ const SearchBox = () => {
                         name="minYear"
                         value={searchParams.minYear}
                         onChange={handleChange}
-                        placeholder="Min Year"
+                        placeholder={t('minYear')}
                         min="1900"
                     />
 
@@ -150,12 +148,12 @@ const SearchBox = () => {
                         name="maxYear"
                         value={searchParams.maxYear}
                         onChange={handleChange}
-                        placeholder="Max Year"
+                        placeholder={t('maxYear')}
                         max={new Date().getFullYear() + 1}
                     />
 
                     <button type="submit" className="search-button">
-                        Search Offers
+                        {t('searchOffers')}
                     </button>
                 </div>
             </form>

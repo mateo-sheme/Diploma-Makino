@@ -17,7 +17,7 @@ namespace Project.Server.Controllers
 
         public CarController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
         {
-            _db= db;
+            _db = db;
             _hostEnvironment = hostEnvironment;
         }
 
@@ -41,7 +41,7 @@ namespace Project.Server.Controllers
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(brand))
-                query = query.Where(c => c.Brand.Contains(brand));
+                    query = query.Where(c => c.Brand.Contains(brand));
                 if (!string.IsNullOrEmpty(model))
                     query = query.Where(c => c.Model.Contains(model));
                 if (!string.IsNullOrEmpty(fuelType))
@@ -61,14 +61,14 @@ namespace Project.Server.Controllers
                 if (maxYear.HasValue)
                     query = query.Where(c => c.Year <= maxYear.Value);
 
-            var results = await query.ToListAsync();
-            return Ok(results);
+                var results = await query.ToListAsync();
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error searching cars: {ex.Message}");
+            }
         }
-         catch (Exception ex)
-    {
-        return StatusCode(500, $"Error searching cars: {ex.Message}");
-    }
-}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Cars_Sale>> GetCar(int id)
@@ -143,17 +143,17 @@ namespace Project.Server.Controllers
             {
                 if (imageFile.Length > 0)
                 {
-                        using var memoryStream = new MemoryStream();
-                        await imageFile.CopyToAsync(memoryStream);
+                    using var memoryStream = new MemoryStream();
+                    await imageFile.CopyToAsync(memoryStream);
 
-                        carImages.Add(new Car_Image
-                        {
-                            Image_Data = memoryStream.ToArray(),
-                            Content_Type = imageFile.ContentType,
-                            Is_Primary = carImages.Count == 0
-                        });
-                    }
-        }
+                    carImages.Add(new Car_Image
+                    {
+                        Image_Data = memoryStream.ToArray(),
+                        Content_Type = imageFile.ContentType,
+                        Is_Primary = carImages.Count == 0
+                    });
+                }
+            }
 
             car.Images = carImages;
 

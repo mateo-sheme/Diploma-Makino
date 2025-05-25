@@ -1,16 +1,16 @@
 .homepage {
     width: 100%;
-    margin-top: 10px; /* This matches your navbar height */
+    margin-bottom: 80px; /* This matches your navbar height */
     position: relative;
 }
 
 .banner-container {
+    bottom: 50px;
     position: relative;
     width: 100%;
     display: flex;
     justify-content: center;
     overflow: hidden;
-    margin-top: -100px;
 }
 
 .banner-image {
@@ -18,10 +18,11 @@
     height: auto;
     max-height: 800px;
     object-fit: cover;
+    min-height: 300px;
 }
 .search-container {
     position: absolute;
-    top: 590px; /* Adjust this value to control vertical position */
+    top: 480px; /* Adjust this value to control vertical position */
     left: 50%;
     width: 90%;
     transform: translateX(-50%);
@@ -43,11 +44,30 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .banner-image {
-        max-height: 200px;
+    .banner-container {
+        margin-top: 0;
     }
 
-    .card {
-        margin-bottom: 20px;
+    .banner-image {
+        min-height: 300px;
+        max-height: 500px;
+
+    }
+
+    .search-container {
+        top: 60%;
+        margin-top:80px;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .banner-image {
+        margin-top: 20px;
+        min-height: 250px;
+    }
+
+    .search-container {
+        top: 58%;
     }
 }

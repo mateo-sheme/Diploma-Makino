@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "bootswatch/dist/Litera/bootstrap.min.css";
 import { useAuth } from '../../contexts/AuthContext';
 import "./Auth.css";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Login = () => {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const { login } = useAuth(); // Get login function from context
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -58,7 +60,7 @@ const Login = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2 className="auth-title">Login</h2>
+                <h2 className="auth-title"></h2>
                 {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
@@ -78,7 +80,7 @@ const Login = () => {
 
                     <div className="mb-4">
                         <label htmlFor="password" className="form-label">
-                            Password
+                            {t("password")}
                         </label>
                         <input
                             type="password"
@@ -95,7 +97,8 @@ const Login = () => {
                         className="btn btn-primary w-100 auth-button"
                         disabled={isLoading}
                     >
-                        {isLoading ? "Logging in..." : "Login"}
+                        
+                        {isLoading ? "Logging in..." : t("login") }  
                     </button>
                 </form>
 
@@ -104,7 +107,7 @@ const Login = () => {
                         className="btn btn-link p-0"
                         onClick={() => navigate("/register")}
                     >
-                        Register
+                        {t("register")}
                     </button>
                 </div>
             </div>
