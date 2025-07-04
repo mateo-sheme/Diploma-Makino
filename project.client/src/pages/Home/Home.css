@@ -22,7 +22,7 @@
 }
 .search-container {
     position: absolute;
-    top: 480px; /* Adjust this value to control vertical position */
+    top: 600px; /* Adjust this value to control vertical position */
     left: 50%;
     width: 90%;
     transform: translateX(-50%);

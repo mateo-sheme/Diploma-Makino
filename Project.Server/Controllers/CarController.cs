@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Server.Data;
 using Project.Server.Entities;
-using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Project.Server.Controllers
 {
@@ -13,12 +10,10 @@ namespace Project.Server.Controllers
     public class CarController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CarController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
+        public CarController(ApplicationDbContext db)
         {
             _db = db;
-            _hostEnvironment = hostEnvironment;
         }
 
         [HttpGet("search")]
@@ -94,22 +89,7 @@ namespace Project.Server.Controllers
             return File(image.Image_Data, image.Content_Type);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cars_Sale>>> GetAllCars()
-        {
-            try
-            {
-                var cars = await _db.Cars_Sale
-                    .Include(c => c.Images)
-                    .ToListAsync();
 
-                return Ok(cars);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error retrieving cars: {ex.Message}");
-            }
-        }
         [HttpPost]
         public async Task<ActionResult<Cars_Sale>> CreateCar([FromForm] Cars_Sale car, [FromForm] List<IFormFile> images)
         {
@@ -138,8 +118,8 @@ namespace Project.Server.Controllers
                 return BadRequest(new { message = "At least one image is required" });
             }
 
-            var carImages = new List<Car_Image>();  //empty list to store image records
-            foreach (var imageFile in images) //loops through each uploaded image from images 
+            var carImages = new List<Car_Image>();  //liste per imazhet
+            foreach (var imageFile in images) //loop per cdo imazh upload
             {
                 if (imageFile.Length > 0)
                 {

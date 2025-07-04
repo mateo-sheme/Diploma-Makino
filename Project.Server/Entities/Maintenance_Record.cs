@@ -18,11 +18,11 @@ namespace Project.Server.Entities
         public int Kilometers { get; set; }
 
         [Required]
-        public string Maintenance_Type { get; set; } = string.Empty; // "OilChange", "EngineCheck", "Inspection", etc.
+        public string Maintenance_Type { get; set; } = string.Empty;
 
         public string Notes { get; set; } = string.Empty;
 
         [Required]
-        public int Next_Maintenance_Km { get; set; } // When next maintenance is due (in km)
+        public int Next_Maintenance_Km { get; set; } 
     }
 }

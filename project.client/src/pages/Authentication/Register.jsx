@@ -37,7 +37,7 @@ const Register = () => {
 
     const validatePhone = (phone) => {
         const digits = phone.replace(/\D/g, "");
-        return digits.length >= 10; // Minimum 10 digits required
+        return digits.length >= 10;
     };
 
     const handleSubmit = async (e) => {
@@ -49,7 +49,7 @@ const Register = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
-        // Validate required fields
+       
         if (!userData.Email || !userData.PasswordHash || !userData.Phone) {
             setError("All fields are required");
             setIsLoading(false);

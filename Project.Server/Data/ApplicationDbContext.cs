@@ -18,14 +18,13 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
+        //mardheniet e tabelave
         modelBuilder.Entity<User>()
         .HasMany(u => u.Cars)  
         .WithOne(c => c.User)
         .HasForeignKey(c => c.User_ID)
         .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure relationships
         modelBuilder.Entity<Cars_Sale>()
             .HasMany(c => c.Images)
             .WithOne(i => i.Car)

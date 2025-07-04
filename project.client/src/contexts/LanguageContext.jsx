@@ -33,6 +33,8 @@ export const LanguageProvider = ({ children }) => {
             automatic: "Automatic",
             minYear: "Min Year",
             maxYear: "Max Year",
+            minKm: "Min KM",
+            maxKm: "Max KM",
             searchOffers: "Search Offers",
 
             // Login/Register
@@ -135,8 +137,8 @@ export const LanguageProvider = ({ children }) => {
             automatic: "Automatik",
             minYear: "Viti Minimal",
             maxYear: "Viti Maksimal",
-            minKm: "Kilometra Minimal",
-            maxKm: "Kilometra Maksimal",
+            minKm: "KM Minimal",
+            maxKm: "KM Maksimal",
             searchOffers: "K\u00EBrko Oferta",
 
             // Login/Register

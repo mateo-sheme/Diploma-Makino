@@ -12,12 +12,10 @@ namespace Project.Server.Controllers
     public class DiaryCarController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public DiaryCarController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
+        public DiaryCarController(ApplicationDbContext db)
         {
             _db = db;
-            _hostEnvironment = hostEnvironment;
         }
 
         [HttpGet]
@@ -127,7 +125,6 @@ namespace Project.Server.Controllers
                 return NotFound();
             }
 
-            // Update all fields
             existingCar.Nickname_Car = carUpdate.Nickname_Car ?? existingCar.Nickname_Car;
             existingCar.VIN = carUpdate.VIN ?? existingCar.VIN;
             existingCar.Brand = carUpdate.Brand ?? existingCar.Brand;
@@ -138,7 +135,6 @@ namespace Project.Server.Controllers
             existingCar.Insurance_Expiry = carUpdate.Insurance_Expiry;
             existingCar.Inspection_Expiry = carUpdate.Inspection_Expiry;
 
-            // Only update image if a new one is provided
             if (Car_Image != null && Car_Image.Length > 0)
             {
                 using var memoryStream = new MemoryStream();

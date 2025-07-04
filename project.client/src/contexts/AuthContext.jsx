@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
 
-    // Check for existing user on initial load
+    // shikon user te loguar per here te pare
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -19,13 +19,13 @@ export function AuthProvider({ children }) {
     const login = (userData) => {
         localStorage.setItem('user', JSON.stringify(userData));
         setCurrentUser(userData);
-        navigate('/'); // Redirect to home after login
+        navigate('/'); // mbasi ben login te con te home
     };
 
     const logout = () => {
         localStorage.removeItem('user');
         setCurrentUser(null);
-        navigate('/login'); // Redirect to login after logout
+        navigate('/login'); // mbas login te con te logout
     };
 
 
@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
 }
 
 AuthProvider.propTypes = {
-    children: PropTypes.node.isRequired, // Add prop validation
+    children: PropTypes.node.isRequired, 
 };
 export { AuthContext };
 export function useAuth() {

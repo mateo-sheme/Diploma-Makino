@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // You'll need to create this (see step 2)
+import { useAuth } from '../contexts/AuthContext';
 import PropTypes from 'prop-types';
 
 export default function AuthGuard({ children }) {
-    const { currentUser } = useAuth(); // Checks if user is logged in
+    const { currentUser } = useAuth(); // shikon nese user eshte i loguar
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!currentUser) {
-            navigate('/login'); // Redirect to login if not authenticated
+            navigate('/login'); // ne te kundert te con te login page
         }
     }, [currentUser, navigate]);
 
-    return currentUser ? children : null; // Render children only if logged in
+    return currentUser ? children : null; // te kthen tek childrens pages mbasi logohesh
 }
 
 AuthGuard.propTypes = {
-    children: PropTypes.node.isRequired, // Add prop validation
+    children: PropTypes.node.isRequired, 
 };

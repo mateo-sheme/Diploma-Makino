@@ -14,7 +14,7 @@ import Sell from './pages/Sell/Sell.jsx'
 import CarDetails from './pages/Search/CarDetails.jsx';
 import Login from './pages/Authentication/Login.jsx';
 import Register from './pages/Authentication/Register.jsx';
-import MaintenancePage from './pages/MyCar/MaintenanceRecord';
+{/*import MaintenancePage from './pages/MyCar/MaintenanceRecord';*/ }
 import DiaryCar from './pages/MyCar/DiaryCar.jsx';
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/sell" element={<PrivateRoute><Sell /></PrivateRoute>} />
                     <Route path="/diarycar" element={<PrivateRoute><DiaryCar /></PrivateRoute>} />
-                    <Route path="/diarycar/:carId/maintenance" element={<MaintenancePage />} />
+                        {/*<Route path="/diarycar/:carId/maintenance" element={<MaintenancePage />} /> */}
                     <Route path="/car/:id" element={<CarDetails />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />

@@ -9,8 +9,8 @@ namespace Project.Server.Entities
         [Key]
         public int Image_ID { get; set; }
 
-        public byte[] Image_Data { get; set; }  // Binary data
-        public string Content_Type { get; set; } // "image/jpeg", "image/png" etc.
+        public byte[] Image_Data { get; set; }  
+        public string Content_Type { get; set; } 
 
         [Required]
         public bool Is_Primary { get; set; }
@@ -18,6 +18,6 @@ namespace Project.Server.Entities
         [ForeignKey("Car_ID")]
         public int Car_ID { get; set; }
         [JsonIgnore]
-        public Cars_Sale? Car { get; set; } // Make nullable if it can be null
+        public Cars_Sale? Car { get; set; } 
     }
 }

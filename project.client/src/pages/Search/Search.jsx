@@ -185,7 +185,6 @@ const Search = () => {
                                                 alt={`${car.brand} ${car.model}`}
                                                 onError={(e) => {
                                                     e.target.onerror = null;
-                                                    e.target.src = '/path/to/fallback-image.jpg';
                                                 }}
                                             />
                                         ) : (

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import "bootswatch/dist/Litera/bootstrap.css";
-import "./MyCar.css";
+import "./DiaryCar.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useLanguage } from "../../contexts/LanguageContext";
 
@@ -80,7 +80,6 @@ export default function DiaryCar() {
 
     useEffect(() => {
         if (selectedCar?.User_Car_ID) {
-            // Load from local storage instead of API
             const records = localMaintenanceRecords[selectedCar.User_Car_ID] || [];
             setMaintenanceRecords(records);
         }
@@ -115,7 +114,6 @@ export default function DiaryCar() {
             setCars(normalizedCars);
             setSelectedCar(normalizedCars.length > 0 ? normalizedCars[0] : null);
 
-            // Initialize local maintenance storage for each car
             normalizedCars.forEach(car => {
                 if (!localMaintenanceRecords[car.User_Car_ID]) {
                     localMaintenanceRecords[car.User_Car_ID] = [];
@@ -193,7 +191,6 @@ export default function DiaryCar() {
             } else {
                 setCars([...cars, savedCar]);
                 setSelectedCar(savedCar);
-                // Initialize local maintenance storage for new car
                 localMaintenanceRecords[savedCar.User_Car_ID] = [];
             }
 
@@ -250,11 +247,9 @@ export default function DiaryCar() {
             });
             formData.append("User_ID", currentUser.userId);
 
-            // Only append Car_Image if a new one is selected
             if (image) {
                 formData.append("Car_Image", image);
             } else {
-                // Indicate we're keeping the existing image
                 formData.append("KeepExistingImage", "true");
             }
 

@@ -23,4 +23,4 @@ namespace Project.Server.Entities
         public ICollection<Diary_Car> Diary_Car { get; set; } = [];
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
-}
+}    

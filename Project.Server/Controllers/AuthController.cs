@@ -44,7 +44,7 @@ namespace Project.Server.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            // Securely hash password
+            // ben hash passwordin
             user.PasswordHash = _passwordHasher.HashPassword(user, userInput.PasswordHash);
 
             try
@@ -74,15 +74,14 @@ namespace Project.Server.Controllers
                 return Unauthorized(new
                 {
                     success = false,
-                    message = "Invalid email or password"
+                    message = "Invalid email"
                 });
             }
 
-            // Verify password
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, userInput.PasswordHash);
             if (result != PasswordVerificationResult.Success)
             {
-                return Unauthorized(new { message = "Invalid email or password" });
+                return Unauthorized(new { message = "Invalid password" });
             }
 
             HttpContext.Session.SetInt32("UserId", user.User_ID);
@@ -92,14 +91,12 @@ namespace Project.Server.Controllers
                 userId = user.User_ID,
                 email = user.Email,
                 phone = user.Phone
-                // Add other needed user properties
             });
         }
 
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            // Since we're not using sessions, just return success
             return Ok(new { message = "Logged out successfully" });
         }
     }

@@ -93,17 +93,17 @@ export default function Sell() {
         try {
             const formDataToSend = new FormData();
 
-            // Append car data (except images)
+            // adds all fields of the formdata
             Object.entries(formData).forEach(([key, value]) => {
                 formDataToSend.append(key, value);
             });
 
-            // Append the user ID here
+            // gets the userid
             formDataToSend.append("userId", userId);
 
-            // Append images with correct field name
+            // adds all the images of the formdata
             images.forEach((image) => {
-                formDataToSend.append("images", image); // Make sure your backend expects 'images'
+                formDataToSend.append("images", image);
             });
 
             const response = await fetch("/api/car", {

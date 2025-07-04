@@ -8,7 +8,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 const Login = () => {
     const navigate = useNavigate();
     const { t } = useLanguage();
-    const { login } = useAuth(); // Get login function from context
+    const { login } = useAuth(); 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -32,8 +32,8 @@ const Login = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json", },
                 body: JSON.stringify({
-                    Email: email,         // Match backend expectation
-                    PasswordHash: password // Send as PasswordHash (will be hashed in backend)
+                    Email: email,       
+                    PasswordHash: password 
                 }),
                 credentials: 'include'
             });
@@ -60,7 +60,7 @@ const Login = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h2 className="auth-title"></h2>
+                <h2 className="auth-title">Login</h2>
                 {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>

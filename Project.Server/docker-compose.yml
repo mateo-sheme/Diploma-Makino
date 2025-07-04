@@ -1,0 +1,33 @@
+﻿version: '3.9'
+
+services:
+  makino-api:
+    image: Doodle1Noodle/makino:latest
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Makino;User=sa;Password=123;TrustServerCertificate=True
+    ports:
+      - "8080:8080"
+    networks:
+      - makino-net
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-lts
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlvolume:/var/opt/mssql
+    networks:
+      - makino-net
+
+volumes:
+  sqlvolume:
+
+networks:
+  makino-net:
+    driver: bridge

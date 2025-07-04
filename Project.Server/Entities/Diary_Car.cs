@@ -28,7 +28,6 @@ namespace Project.Server.Entities
 
         public ICollection<Maintenance_Record> Maintenance_Record { get; set; } = new List<Maintenance_Record>();
 
-        // Insurance and inspection
         public DateTime? Insurance_Expiry { get; set; }
         public DateTime? Inspection_Expiry { get; set; }
     }

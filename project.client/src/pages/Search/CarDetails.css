@@ -48,6 +48,9 @@
         height: 250px;
     }
 
+    .details-card {
+        margin-top: 160px;
+    }
     .thumbnail-item img {
         width: 60px;
         height: 45px;
@@ -55,5 +58,9 @@
 
     .specs-grid {
         grid-template-columns: 1fr;
+    }
+
+    .card-body{
+        height:320px;
     }
 }
