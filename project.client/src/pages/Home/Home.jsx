@@ -1,5 +1,5 @@
 import SearchBox from '../../components/searchbox.jsx';
-import "bootswatch/dist/Litera/bootstrap.css";
+import "bootswatch/dist/litera/bootstrap.css";
 import "./Home.css";
 
 function Home() {

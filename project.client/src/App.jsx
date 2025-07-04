@@ -2,8 +2,8 @@ import { } from 'react';
 import './App.css';
 import {Route, Routes } from "react-router-dom"
 import { Navbar } from "./components/Navbar.jsx"
-import "bootswatch/dist/Litera/bootstrap.css";
-import "bootswatch/dist/Litera/bootstrap.min.css";
+import "bootswatch/dist/litera/bootstrap.css";
+import "bootswatch/dist/litera/bootstrap.min.css";
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './contexts/PrivateRoute';
 import { LanguageProvider } from './contexts/LanguageContext';

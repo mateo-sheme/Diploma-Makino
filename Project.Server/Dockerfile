@@ -11,11 +11,14 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
 WORKDIR /src
 COPY ["Project.Server/Project.Server.csproj", "Project.Server/"]
 COPY ["project.client/project.client.esproj", "project.client/"]
 RUN dotnet restore "./Project.Server/Project.Server.csproj"
 COPY . .
+RUN npm install --prefix ./project.client
+RUN ls -al ./project.client/node_modules/bootswatch/dist/litera/
 WORKDIR "/src/Project.Server"
 RUN dotnet build "./Project.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

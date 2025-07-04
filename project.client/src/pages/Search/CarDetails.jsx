@@ -1,7 +1,7 @@
 ﻿import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
-import "bootswatch/dist/Litera/bootstrap.min.css";
+import "bootswatch/dist/litera/bootstrap.min.css";
 import './CarDetails.css';
 import { useLanguage } from "../../contexts/LanguageContext";
 

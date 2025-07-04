@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import "bootswatch/dist/Litera/bootstrap.css";
-import "bootswatch/dist/Litera/bootstrap.min.css";
+import "bootswatch/dist/litera/bootstrap.css";
 import "./Navbar.css";
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';

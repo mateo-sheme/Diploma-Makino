@@ -1,5 +1,5 @@
 ﻿import { useState, useContext } from "react";
-import "bootswatch/dist/Litera/bootstrap.css";
+import "bootswatch/dist/litera/bootstrap.css";
 import "./Sell.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useLanguage } from "../../contexts/LanguageContext";

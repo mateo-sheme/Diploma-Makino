@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useMemo } from "react";
-import "bootswatch/dist/Litera/bootstrap.css";
+import "bootswatch/dist/litera/bootstrap.css";
 import "./DiaryCar.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useLanguage } from "../../contexts/LanguageContext";

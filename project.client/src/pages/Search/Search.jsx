@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import "bootswatch/dist/Litera/bootstrap.min.css";
+import "bootswatch/dist/litera/bootstrap.min.css";
 import "./Search.css";
 import { useLanguage } from "../../contexts/LanguageContext";
 
