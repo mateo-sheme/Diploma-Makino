@@ -196,10 +196,10 @@ const Search = () => {
                                             <div>
                                                 <h5 className="card-title">{car.brand} {car.model}</h5>
                                                 <p className="card-text">
-                                                    <strong>{car.price?.toLocaleString(language)} {'\u20AC'}</strong> | {t(car.usage?.toLowerCase())} | {car.year} | {car.kilometers?.toLocaleString(language)} {t("kilometers")} | {t(car.fuel?.toLowerCase())} | {t(car.transmission?.toLowerCase())}
+                                                    {t(car.usage?.toLowerCase())} | {car.year} | {car.kilometers?.toLocaleString(language)} {t("kilometers")} | {t(car.fuel?.toLowerCase())} | {t(car.transmission?.toLowerCase())}
                                                 </p>
                                                 <p className="card-text">
-                                                    <small className="text-muted">VIN: {car.vin}</small>
+                                                    <strong className="text-bold">Price: {car.price} {'\u20AC'}</strong>
                                                 </p>
                                             </div>
 
