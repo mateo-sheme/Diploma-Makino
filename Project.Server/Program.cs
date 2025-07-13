@@ -29,6 +29,11 @@ app.UseSession();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapFallbackToFile("/index.html"); 
+app.MapFallbackToFile("/index.html");
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var db = services.GetRequiredService<ApplicationDbContext>();
+db.Database.Migrate();
 
 app.Run();

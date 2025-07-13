@@ -1,6 +1,7 @@
 import SearchBox from '../../components/searchbox.jsx';
 import "bootswatch/dist/litera/bootstrap.css";
 import "./Home.css";
+import Baner from '/assets/baner.png';
 
 function Home() {
     return (
@@ -8,7 +9,7 @@ function Home() {
             {/* Main Banner Section */}
             <div className="banner-container">
                 <img
-                    src="/src/assets/Baner.png"
+                    src={Baner}
                     alt="Makino Car Marketplace"
                     className="banner-image w-100"
                 />

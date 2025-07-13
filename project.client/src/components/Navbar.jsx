@@ -4,6 +4,7 @@ import "bootswatch/dist/litera/bootstrap.css";
 import "./Navbar.css";
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import logo from '/assets/Logo makino dark-02.png';
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -32,16 +33,13 @@ export const Navbar = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                {/* Centered Navigation Content */}
+                {/* Centered Navigation Content + Logo */}
                 <div className="d-flex justify-content-center w-100" id="navbarNav">
                     <div className="collapse navbar-collapse justify-content-center" id="navbarContent">
-                        <div className="d-flex align-items-center">
-                            <Link to="/" className="logo me-4">
-                                <img
-                                    src="src/assets/Logo makino dark-02.png"
-                                    alt="Logo"
-                                    className="logo-img"
-                                />
+                        <div className="d-flex align-items-center gap-4">
+                            {/* Logo for desktop only */}
+                            <Link to="/" className="logo d-none d-lg-block">
+                                <img src={logo} alt="Logo" className="logo-img" />
                             </Link>
 
                             <ul className="navbar-nav mb-2 mb-lg-0 me-4">
@@ -98,6 +96,11 @@ export const Navbar = () => {
                     </button>
 
                     <div className="overlay-content">
+                        {/* Mobile logo */}
+                        <Link to="/" className="d-block d-lg-none mb-4 text-center">
+                            <img src={logo} alt="Logo" className="logo-img" />
+                        </Link>
+
                         <Link className="nav-link" to="/search" onClick={() => setIsOpen(false)}>{t('search')}</Link>
                         <Link className="nav-link" to="/sell" onClick={() => setIsOpen(false)}>{t('sell')}</Link>
                         <Link className="nav-link" to="/diarycar" onClick={() => setIsOpen(false)}>{t('diaryCar')}</Link>
