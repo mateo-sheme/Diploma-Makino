@@ -2,7 +2,7 @@
 
 services:
   makino-api:
-    image: Doodle1Noodle/makino:latest
+    image: doodle1noodle/diploma_makino:1.0
     depends_on:
       - sqlserver
     environment:

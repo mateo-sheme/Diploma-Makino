@@ -46,4 +46,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+	
 </Project>

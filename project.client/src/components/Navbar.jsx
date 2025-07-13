@@ -20,19 +20,11 @@ export const Navbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
-            <div className="d-flex align-items-center" id="navbarNav">
-                <Link to="/" className="logo me-4">
-                    <img
-                        src="src/assets/Logo makino dark-02.png"
-                        alt="Logo"
-                        className="logo-img"
-                    />
-                </Link>
-
+        <nav className="navbar navbar-expand-lg">
+            <div className="container-fluid">
                 {/* Mobile Toggle Button */}
                 <button
-                    className="navbar-toggler"
+                    className="navbar-toggler position-absolute end-0 me-3"
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Toggle navigation"
@@ -40,46 +32,58 @@ export const Navbar = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                {/* Desktop Navigation */}
-                <div className="collapse navbar-collapse" id="navbarContent">
-                    <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/search">{t('search')}</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/sell">{t('sell')}</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/diarycar">{t('diaryCar')}</Link>
-                        </li>
-                    </ul>
-
-                    <div className="d-flex align-items-center">
-                        {currentUser && (
-                            <span className="nav-email text-white me-3">{currentUser.email}</span>
-                        )}
-                        <button
-                            className="btn btn-outline-light btn-sm mx-2"
-                            onClick={toggleLanguage}
-                        >
-                            {language === 'en' ? 'AL' : 'EN'}
-                        </button>
-
-                        {currentUser ? (
-                            <button
-                                className="btn btn-outline-light btn-sm"
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </button>
-                        ) : (
-                            <Link
-                                to="/login"
-                                className="btn btn-outline-light btn-sm"
-                            >
-                                Login
+                {/* Centered Navigation Content */}
+                <div className="d-flex justify-content-center w-100" id="navbarNav">
+                    <div className="collapse navbar-collapse justify-content-center" id="navbarContent">
+                        <div className="d-flex align-items-center">
+                            <Link to="/" className="logo me-4">
+                                <img
+                                    src="src/assets/Logo makino dark-02.png"
+                                    alt="Logo"
+                                    className="logo-img"
+                                />
                             </Link>
-                        )}
+
+                            <ul className="navbar-nav mb-2 mb-lg-0 me-4">
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/search">{t('search')}</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/sell">{t('sell')}</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/diarycar">{t('diaryCar')}</Link>
+                                </li>
+                            </ul>
+
+                            <div className="d-flex align-items-center">
+                                {currentUser && (
+                                    <span className="nav-email text-white me-3">{currentUser.email}</span>
+                                )}
+                                <button
+                                    className="btn btn-outline-light btn-sm mx-2"
+                                    onClick={toggleLanguage}
+                                >
+                                    {language === 'en' ? 'AL' : 'EN'}
+                                </button>
+
+                                {currentUser ? (
+                                    <button
+                                        className="btn btn-outline-light btn-sm"
+                                        onClick={handleLogout}
+                                    >
+                                        Logout
+                                    </button>
+                                ) : (
+                                    <Link
+                                        to="/login"
+                                        className="btn btn-outline-light btn-sm"
+                                    >
+                                        Login
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

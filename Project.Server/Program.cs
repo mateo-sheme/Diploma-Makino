@@ -4,22 +4,14 @@ using Project.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDistributedMemoryCache(); // Required for session storage
-builder.Services.AddSession(options => {
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true; // Make session cookie essential
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-});
-
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => {
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
@@ -28,15 +20,15 @@ builder.Services.AddSession(options => {
 
 var app = builder.Build();
 
+
+app.UseDefaultFiles(); 
+app.UseStaticFiles(); 
+
 app.UseHttpsRedirection();
-
 app.UseSession();
-
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapFallbackToFile("/index.html");
-
+app.MapFallbackToFile("/index.html"); 
 
 app.Run();
