@@ -27,7 +27,8 @@ namespace Project.Server.Controllers
             [FromQuery] int? minKm = null,
             [FromQuery] int? maxKm = null,
             [FromQuery] int? minYear = null,
-            [FromQuery] int? maxYear = null)
+            [FromQuery] int? maxYear = null,
+            [FromQuery] string contact_number = null)
         {
             try
             {
@@ -55,6 +56,8 @@ namespace Project.Server.Controllers
                     query = query.Where(c => c.Year >= minYear.Value);
                 if (maxYear.HasValue)
                     query = query.Where(c => c.Year <= maxYear.Value);
+                if (!string.IsNullOrEmpty(contact_number))
+                    query = query.Where(c => c.Contact_Number.Contains(contact_number));
 
                 var results = await query.ToListAsync();
                 return Ok(results);

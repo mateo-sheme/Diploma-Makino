@@ -59,7 +59,14 @@ function CarDetailsPage() {
                     <div className="card details-card shadow-sm">
                         <div className="card-body">
                             <h2 className="card-title">{car.brand} {car.model}</h2>
-                            <h4 className="text-primary mb-4">{car.price?.toLocaleString()} €</h4>
+                            <h4 className="text-primary mb-3">{car.price?.toLocaleString()} €</h4>
+
+                            <p className="mb-4">
+                                <strong>{t("contactNumber")}: </strong>
+                                <a href={`tel:${car.contact_Number?.replace(/[^+\d]/g, '')}`} className="text-decoration-none">
+                                    {car.contact_Number}
+                                </a>
+                            </p>
 
                             <div className="specs-grid mb-4">
                                 <div className="spec-item">
@@ -80,9 +87,10 @@ function CarDetailsPage() {
                                 </div>
                             </div>
 
-                            <a href={`tel:${car.Contact_Number}`} className="btn btn-primary btn-lg w-100 mb-3">
+                            <a href={`tel:${car.contact_Number?.replace(/[^+\d]/g, '')}`} className="btn btn-primary btn-lg w-100 mb-3">
                                 <i className="bi bi-telephone me-2"></i>{t("contactSeller")}
                             </a>
+
                         </div>
                     </div>
                 </div>
